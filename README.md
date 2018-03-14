@@ -1,4 +1,4 @@
-# Lazy_Server
+# lazy_server
 
 [lazy_server](https://github.com/gxf0/lazy_server/tree/master/README.md) : 
  [lazy_deb](https://github.com/gxf0/lazy_server/tree/master/docs/deb.md) |
