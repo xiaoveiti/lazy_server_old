@@ -12,9 +12,9 @@ I am a huge Debian fan, so don't be surprised, most of my scripts are based on a
 
 ### Script Collection
 
-For more information, please read the particular \*.md, which you can find in the [docs](https://github.com/gxf0/lazy_server/tree/master/docs) folder.
+For more information, please read the particular \*.md, which you can find in the [docs](https://github.com/gxf0/lazy_server/tree/master/docs) folder, or choose from the list below:
 
-* lazy_deb
+* [lazy_deb](https://github.com/gxf0/lazy_server/tree/master/docs/deb.md)
 * [lazy_lemp](https://github.com/gxf0/lazy_server/tree/master/docs/lemp.md)
 * lazy_ngx
 * lazy_pi
