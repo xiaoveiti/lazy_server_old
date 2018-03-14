@@ -1,13 +1,12 @@
 # Lazy_Server
 
-[lazy_deb](https://github.com/gxf0/lazy_server/tree/master/docs/deb.md) |
+[lazy_server](https://github.com/gxf0/lazy_server/tree/master/README.md) : 
+ [lazy_deb](https://github.com/gxf0/lazy_server/tree/master/docs/deb.md) |
  [lazy_lemp](https://github.com/gxf0/lazy_server/tree/master/docs/lemp.md) |
  [lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md) |
  [lazy_pi](https://github.com/gxf0/lazy_server/tree/master/docs/pi.md) |
  [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md) |
  [lazy_ts](https://github.com/gxf0/lazy_server/tree/master/docs/ts3.md)
-
-A simple script collection to manage your server
 
 ## Information
 
@@ -19,15 +18,7 @@ I am a huge Debian fan, so don't be surprised, most of my scripts are based on a
 
 ### Script Collection
 
-For more information, please read the particular \*.md, which you can find in the [docs](https://github.com/gxf0/lazy_server/tree/master/docs) folder, or choose from the list below:
-
-* [lazy_deb](https://github.com/gxf0/lazy_server/tree/master/docs/deb.md)
-* [lazy_lemp](https://github.com/gxf0/lazy_server/tree/master/docs/lemp.md)
-* [lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md)
-* [lazy_pi](https://github.com/gxf0/lazy_server/tree/master/docs/pi.md)
-* [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md)
-* [lazy_ts](https://github.com/gxf0/lazy_server/tree/master/docs/ts3.md)
-
+For more information, please read the particular \*.md, which you can find in the [docs](https://github.com/gxf0/lazy_server/tree/master/docs) folder, or choose from the list at the top.
 
 ## Author
 
