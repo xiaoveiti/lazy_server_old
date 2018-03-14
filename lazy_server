@@ -92,22 +92,30 @@ echo ""
 echo -e "
 
 
-XXXXXXX       XXXXXXXFFFFFFFFFFFFFFFFFFFFFF     OOOOOOOOO
-X:::::X       X:::::XF::::::::::::::::::::F   OO:::::::::OO
-X:::::X       X:::::XF::::::::::::::::::::F OO:::::::::::::OO
-X::::::X     X::::::XFF::::::FFFFFFFFF::::FO:::::::OOO:::::::O
-XXX:::::X   X:::::XXX  F:::::F       FFFFFFO::::::O   O::::::O
-   X:::::X X:::::X     F:::::F             O:::::O     O:::::O
-    X:::::X:::::X      F::::::FFFFFFFFFF   O:::::O     O:::::O
-     X:::::::::X       F:::::::::::::::F   O:::::O     O:::::O
-     X:::::::::X       F:::::::::::::::F   O:::::O     O:::::O
-    X:::::X:::::X      F::::::FFFFFFFFFF   O:::::O     O:::::O
-   X:::::X X:::::X     F:::::F             O:::::O     O:::::O
-XXX:::::X   X:::::XXX  F:::::F             O::::::O   O::::::O
-X::::::X     X::::::XFF:::::::FF           O:::::::OOO:::::::O
-X:::::X       X:::::XF::::::::FF            OO:::::::::::::OO
-X:::::X       X:::::XF::::::::FF              OO:::::::::OO
-XXXXXXX       XXXXXXXFFFFFFFFFFF                OOOOOOOOO     
+XXXXXXX       XXXXXXX FFFFFFFFFFFFFFFFFFFFFF      OOOOOOOOO
+X:::::X       X:::::X F::::::::::::::::::::F    OO:::::::::OO
+X:::::X       X:::::X F::::::::::::::::::::F OO:::::::::::::OO
+X::::::X     X::::::X FF::::::FFFFFFFFF::::F O:::::::OOO:::::::O
+XXX:::::X   X:::::XXX   F:::::F       FFFFFF O::::::O   O::::::O
+   X:::::X X:::::X      F:::::F              O:::::O     O:::::O
+    X:::::X:::::X       F::::::FFFFFFFFFF    O:::::O     O:::::O
+     X:::::::::X        F:::::::::::::::F    O:::::O     O:::::O
+     X:::::::::X        F:::::::::::::::F    O:::::O     O:::::O
+    X:::::X:::::X       F::::::FFFFFFFFFF    O:::::O     O:::::O
+   X:::::X X:::::X      F:::::F              O:::::O     O:::::O
+XXX:::::X   X:::::XXX   F:::::F              O::::::O   O::::::O
+X::::::X     X::::::X FF:::::::FF            O:::::::OOO:::::::O
+X:::::X       X:::::X F::::::::FF             OO:::::::::::::OO
+X:::::X       X:::::X F::::::::FF               OO:::::::::OO
+XXXXXXX       XXXXXXX FFFFFFFFFFF                 OOOOOOOOO
+
+
+██╗  ██╗███████╗ ██████╗
+╚██╗██╔╝██╔════╝██╔═══██╗
+ ╚███╔╝ █████╗  ██║   ██║
+ ██╔██╗ ██╔══╝  ██║   ██║
+██╔╝ ██╗██║     ╚██████╔╝
+╚═╝  ╚═╝╚═╝      ╚═════╝
 
 
 "
