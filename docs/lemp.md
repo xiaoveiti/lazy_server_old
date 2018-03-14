@@ -6,7 +6,7 @@
  [lazy_pi](https://github.com/gxf0/lazy_server/tree/master/docs/pi.md) |
  [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md) |
  [lazy_ts](https://github.com/gxf0/lazy_server/tree/master/docs/ts3.md)
- 
+ * * *
 Setup and configure a fully functional LEMP stack, which includes:
 
 * NGiNX ([lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md))

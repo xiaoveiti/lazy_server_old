@@ -6,7 +6,7 @@
  [lazy_pi](https://github.com/gxf0/lazy_server/tree/master/docs/pi.md) |
  [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md) |
  [lazy_ts](https://github.com/gxf0/lazy_server/tree/master/docs/ts3.md)
- 
+ * * *
 A simple script to deploy a TeamSpeak 3 Server on your machine. At least I dislike to copy stuff from the shell, but you need the Server Query Login, or the Admin Token, so all this information, include your server public IP will be stored in a txt file (ts3_login.txt). Still to lazy to check the dir? Or maybe you just want to set up the server for some of your friends and not really mind, what they are going to do with it? You also could automatically send the login information to your/their email.
 
 If you don't need this server to be up the whole time, and just want to set up for testing, or maybe for some event, you can also use this script to destroy/delete the server include all files.

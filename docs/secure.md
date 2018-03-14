@@ -6,7 +6,7 @@
  [lazy_pi](https://github.com/gxf0/lazy_server/tree/master/docs/pi.md) |
  [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md) |
  [lazy_ts](https://github.com/gxf0/lazy_server/tree/master/docs/ts3.md)
- 
+ * * *
 Secure your Server:
  - install and configure fail2ban, apticron & rkhunter
  - change ssh port
