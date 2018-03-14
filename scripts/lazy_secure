@@ -75,7 +75,9 @@ usage() {
 
     Usage: $myname options
 
-    Blabla.
+    Secure your Server: 
+     - install and configure fail2ban, apticron & rkhunter
+     - change ssh port
 
     Options:
        -s  --screen		show terminal output

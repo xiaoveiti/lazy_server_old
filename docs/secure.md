@@ -1,7 +1,8 @@
 # lazy_secure
 
-Update Pi-hole and your Block-List.
-If Pi-hole is not installed, the script will install it.
+Secure your Server:
+ - install and configure fail2ban, apticron & rkhunter
+ - change ssh port
 
 ### Prerequisites
 
