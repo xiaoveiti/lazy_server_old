@@ -18,7 +18,6 @@ install_postfix="true"
 ##### DO NOT EDIT BELOW THIS LINE  ####
 
 ## xf0 Default
-starttime=$(date +%s)
 mydir="$(pwd)"
 myname=$(basename $0)
 string="$@"
@@ -47,7 +46,7 @@ cmdline() {
     done
     eval set -- $args
 
-    while getopts "hxs" option
+    while getopts "hnxs" option
     do
          case $option in
          h)
@@ -58,6 +57,9 @@ cmdline() {
              exec 5>dev-debug.log
              BASH_XTRACEFD="5"
              set -x
+             ;;
+        n)
+             install_postfix="false"
              ;;
          s)
              out='/dev/tty'
@@ -92,6 +94,7 @@ EOF
 }
 
 deb_welcome() {
+      starttime=$(date +%s)
       echo ""
       echo -e "${blue}============================================"
       echo -e "Lazy Debian Config:"
