@@ -17,10 +17,10 @@ chmod +x lazy_lemp
 
 ### Optional Configure
 
-You can define several variables at the beghining of the script, but be sure
-to also addjust the correspondingly source list.
+You can define several variables at the beginning of the script, but be sure
+to also adjust the correspondingly source list.
 
-php="7.2" 
+php="7.2"
 mariadb="10.2"
 
 install_pma="true"
