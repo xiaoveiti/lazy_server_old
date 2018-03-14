@@ -7,14 +7,20 @@
  [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md) |
  [lazy_ts](https://github.com/gxf0/lazy_server/tree/master/docs/ts3.md)
  * * *
-Update Pi-hole and your Block-List.
-If Pi-hole is not installed, the script will install it.
+Simple update Pi-hole and your Block-List.
+If Pi-hole is not installed, the script will install it for you.
 
-### Prerequisites
+You could also just use the original pihole script, to update your system, but this will not work, 
+if you changed the webdir for the admin webinterface. So I implemented this small update function.
 
-Don't forget to make the script executable.
+### Usage
+
+You can either clone the completely repo, or just download the scripts you need.
+
 ```
+wget https://github.com/gxf0/lazy_server/blob/master/scripts/lazy_pi
 chmod +x lazy_pi
+./lazy_pi
 ```
 
 ### Optional Configure

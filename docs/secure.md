@@ -11,11 +11,14 @@ Secure your Server:
  - install and configure fail2ban, apticron & rkhunter
  - change ssh port
 
-### Prerequisites
+### Usage
 
-Don't forget to make the script executable.
+You can either clone the completely repo, or just download the scripts you need.
+
 ```
+wget https://github.com/gxf0/lazy_server/blob/master/scripts/lazy_secure
 chmod +x lazy_secure
+./lazy_secure
 ```
 
 ### Optional Configure

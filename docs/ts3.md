@@ -11,11 +11,14 @@ A simple script to deploy a TeamSpeak 3 Server on your machine. At least I disli
 
 If you don't need this server to be up the whole time, and just want to set up for testing, or maybe for some event, you can also use this script to destroy/delete the server include all files.
 
-### Prerequisites
+### Usage
 
-Don't forget to make the script executable.
+You can either clone the completely repo, or just download the scripts you need.
+
 ```
-chmod +x lazy_ts3
+wget https://github.com/gxf0/lazy_server/blob/master/scripts/lazy_ts
+chmod +x lazy_ts
+./lazy_ts
 ```
 
 ### Optional Configure
@@ -36,7 +39,7 @@ ts_mail="false" # by default no mail will be send
 ### Script Options
 
 ```
-./lazy_ts3 <option>
+./lazy_ts <option>
 
   -e  --email     specify email to receive login
   -k  --kill      delete server include all files
@@ -49,8 +52,8 @@ Examples:
 
 Specify email :
 ```
- ./lazy_ts3 -m<mail@domain.tld>
- ./lazy_ts3 --mail<mail@domain.tld>
+ ./lazy_ts -m<mail@domain.tld>
+ ./lazy_ts --mail<mail@domain.tld>
 ```
 
 ### Manage Teamspeak 3 Server
