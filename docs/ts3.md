@@ -34,7 +34,7 @@ ts_mail="false" # by default no mail will be send
   -e  --email     specify email to receive login
   -k  --kill      delete server include all files
   -s  --screen	  show terminal output
-  -x  --debug		  debug (dev-debug.log )
+  -x  --debug		  debug (dev-debug.log)
   -h  --help		  show this help
 ```
 
