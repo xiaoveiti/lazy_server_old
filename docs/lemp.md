@@ -33,11 +33,11 @@ pma_dir="/var/www/phpmyadmin"
 ```
 ./lazy_lemp <option>
 
-  -p  --password   specifiy mysql root password
-  -n  --noadmin    don't install phpMyAdmin
-  -s  --screen     show terminal output
-  -x  --debug      (dev-debug.log)
-  -h  --help       show this help
+  -p  --password     specifiy mysql root password
+  -n  --noadmin      don't install phpMyAdmin
+  -s  --screen       show terminal output
+  -x  --debug        (dev-debug.log)
+  -h  --help         show this help
 ```
 
 Examples:
