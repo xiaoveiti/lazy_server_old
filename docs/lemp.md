@@ -2,7 +2,7 @@
 
 Setup and configure a fully functional LEMP stack, which includes:
 
-* NGiNX (mainline)
+* NGiNX ([lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md))
 * PHP 7.2 - FPM
   - GD, MySQL, CURL, OPcache, XML
   - ZIP, INTL, Mbstring, BZ2, DEV

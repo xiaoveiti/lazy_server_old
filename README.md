@@ -16,7 +16,7 @@ For more information, please read the particular \*.md, which you can find in th
 
 * [lazy_deb](https://github.com/gxf0/lazy_server/tree/master/docs/deb.md)
 * [lazy_lemp](https://github.com/gxf0/lazy_server/tree/master/docs/lemp.md)
-* lazy_ngx
+* [lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md)
 * lazy_pi
 * lazy_secure
 * [lazy_ts](https://github.com/gxf0/lazy_server/tree/master/docs/ts3.md)
