@@ -144,7 +144,7 @@ ngx_build() {
     purge="--with-file-aio\ \--add-module=${ngx_sedpath}\/debian\/modules\/ngx_cache_purge"
     sed -ie s/--user=nginx/--user=www-data/g ${ngx_build}/debian/rules
     sed -ie s/--group=nginx/--group=www-data/g ${ngx_build}/debian/rules
-    sed -ie "s/--with-file-aio/$ngx_mod_purge/g" ${ngx_build}/debian/rules
+    sed -ie "s/--with-file-aio/$purge/g" ${ngx_build}/debian/rules
     #sed -i '/--with-file-aio \\/i--add-module='"$ngx_build"'/debian/modules/ngx_cache_purge \\' ${ngx_build}/debian/rules
 
     # Build
