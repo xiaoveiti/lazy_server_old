@@ -27,7 +27,7 @@ rkhunter="true"
 ./lazy_secure <option>
 
  -s  --screen		show terminal output
- -x  --debug		debug (dev-debug.log )
+ -x  --debug		debug (dev-debug.log)
  -h  --help		show this help
 ```
 

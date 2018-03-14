@@ -27,7 +27,7 @@ pi_webdir="/var/www/xf0/pihole"
  -u  --update   update/install pi-hole
  -l  --list     update lists
  -s  --screen		show terminal output
- -x  --debug		debug (dev-debug.log )
+ -x  --debug		debug (dev-debug.log)
  -h  --help		  show this help
 ```
 

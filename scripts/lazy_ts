@@ -10,16 +10,14 @@
 #
 #################################################
 
-## Defined vars
-
-serverip=$(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')
-ts_mail="false" # by default no mail will be send
-
-# Configure
+## Configure
 
 ts_user="teamspeak"
 ts_dir="/opt/teamspeak"
 ts_download="http://dl.4players.de/ts/releases/3.1.0/teamspeak3-server_linux_amd64-3.1.0.tar.bz2"
+
+serverip=$(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')
+ts_mail="false" # by default no mail will be send
 
 ## xf0 Default
 out="/dev/null"
@@ -102,7 +100,7 @@ usage() {
        -e  --email    specify email to receive login
        -k  --kill   delete server include all files
        -s  --screen		show terminal output
-       -x  --debug		debug (dev-debug.log )
+       -x  --debug		debug (dev-debug.log)
        -h  --help		show this help
 
     Examples:
