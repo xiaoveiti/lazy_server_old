@@ -1,0 +1,257 @@
+#!/bin/bash
+
+#################################################
+#
+# Lazy Secure
+# Version 1.8
+# Copyright 2018, Veit <mail@geekmonkey.de>
+#
+# Tested: 24.02.2018
+#
+#################################################
+
+## Defined vars
+
+fail2ban="true"
+apticron="true"
+rkhunter="true"
+
+##### DO NOT EDIT BELOW THIS LINE  ####
+
+## xf0 Default
+out="/dev/null"
+mydir="$(pwd)"
+myname=$(basename $0)
+string="$@"
+
+# Colors
+green='\e[92m'
+red='\e[31m'
+blue='\e[96m'
+nc='\033[0m'
+
+##### Start Script  ####
+
+cmdline() {
+    local arg=
+    for arg
+    do
+        local delim=""
+        case "$arg" in
+            --help)           args="${args}-h ";;
+            --debug)          args="${args}-x ";;
+            --screen)         args="${args}-s ";;
+            *) [[ "${arg:0:1}" == "-" ]] || delim="\""
+                args="${args}${delim}${arg}${delim} ";;
+        esac
+    done
+    eval set -- $args
+
+    while getopts "hxs" option
+    do
+         case $option in
+         h)
+             usage
+             exit 0
+             ;;
+         x)
+             exec 5>dev-debug.log
+             BASH_XTRACEFD="5"
+             set -x
+             ;;
+         s)
+             out='/dev/tty'
+             ;;
+
+        esac
+    done
+    return 0
+}
+
+usage() {
+    cat <<- EOF
+
+    ----------------------------------------------------
+
+    Usage: $myname options
+
+    Blabla.
+
+    Options:
+       -s  --screen		show terminal output
+       -x  --debug		debug (dev-debug.log )
+       -h  --help		show this help
+
+
+    Examples:
+       Debug script :
+       $myname -x
+       $myname --debug
+
+EOF
+}
+
+
+secure_start() {
+    starttime=$(date +%s)
+    echo ""
+    echo -e "${blue}============================================"
+    echo -e "Lazy Secure includes:"
+    echo -e "============================================${nc}"
+    echo ""
+    echo -e " ${blue}\xe2\x98\x85${nc} System Settings"
+    echo -e "   ${blue}-${nc} Change SSH Port"
+    echo -e "   ${blue}-${nc} Login Notification"
+    echo -e " ${blue}\xe2\x98\x85${nc} Fail2ban"
+    echo -e " ${blue}\xe2\x98\x85${nc} Apticron"
+    echo -e " ${blue}\xe2\x98\x85${nc} Rootkit Hunter"
+    echo ""
+    echo -e "${blue}============================================${nc}"
+
+    # Input
+    echo -e "${blue}Lazy Secure: Configuration:"
+    echo -e "============================================${nc}"
+    echo ""
+    read -p "Enter the hostname: " hostname
+    read -p "Enter your email address: " your_email
+    read -p "Changing SSH Port to: " ssh_port
+    echo ""
+    echo -e "${blue}Lazy Secure: Begin Installation"
+    echo -e "============================================${nc}"
+    echo -ne '\n'
+    export hostname=$hostname
+    export your_email=$your_email
+    export ssh_port=$ssh_port
+}
+
+check_install() { # syntax: function <name> <pkg name> install_<short name>
+    echo ""
+    echo -ne "Checking $1 Status:\r"
+    if [ $(dpkg-query -W -f='${Status}' $2 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
+      sleep 1
+      echo -ne "Checking $1 Status: [${green}installed${nc}]\r"
+      echo -ne '\n'
+      export install_$3="false" #declare -g | eval
+    else
+      sleep 1
+      echo -ne "Checking $1 Status: [${red}not installed${nc}]\r"
+      export install_$3="true"
+    fi
+}
+
+prepare_system() {
+  echo ""
+  echo -ne "Prepare System: >> ${blue}doing update ${nc}<<\r"
+  apt-get update > $out 2>&1
+  echo -ne "Prepare System: >> ${blue}install packages ${nc}<<\r"
+  curl > $out 2>&1
+  echo -ne "\033[2K" ; printf "\r"
+  echo -ne "Prepare System: [${blue}done${nc}]\r"
+  echo -ne '\n'
+}
+
+change_ssh() {
+  sed -i 's/^#Port .*/'"Port $ssh_port/g" /etc/ssh/sshd_config
+  /etc/init.d/ssh restart > $out 2>&1
+}
+
+login_nofification() {
+  cat > /opt/shell-login.sh <<EOF
+#!/bin/bash
+
+echo "Login auf \$(hostname) am \$(date +%d.%m.%Y) um \$(date +%H:%M) Uhr"
+echo "Benutzer: \$USER"
+echo
+EOF
+  chmod 755 /opt/shell-login.sh
+  echo '/opt/shell-login.sh | mailx -s "SSH Login auf '$hostname'" '$your_email'' >> /etc/profile
+}
+
+install_fail2ban() {
+  check_install Fail2ban fail2ban fail2ban
+  if [ "$install_fail2ban" = true ] && [ "$fail2ban" = true ]; then
+    sleep 2
+    echo -ne "Checking Fail2ban Status: [${red}not installed${nc}] >> ${blue}begin setup ${nc}<<\r"
+    apt-get install -y fail2ban > $out 2>&1
+    cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+    sed -i 's/^bantime.*/'"bantime = 8640/g" /etc/fail2ban/jail.local
+    sed -i 's/^destemail.*/'"destemail = $your_email/g" /etc/fail2ban/jail.local
+    sed -i 's/^sender .*/'"sender = fail2ban@$hostname/g" /etc/fail2ban/jail.local
+    sed -i 's/^action = %(action_)s.*/'"action = %(action_mwl)s/g" /etc/fail2ban/jail.local
+
+    echo -ne "\033[2K" ; printf "\r"
+    echo -ne "Checking Fail2ban Status: [${green}installed${nc}]\r"
+    echo -ne '\n'
+  fi
+}
+
+install_apticron() {
+  check_install Apticron apticron apticron
+  if [ "$install_apticron" = true ] && [ "$apticron" = true ]; then
+    sleep 2
+    echo -ne "Checking Apticron Status: [${red}not installed${nc}] >> ${blue}begin setup ${nc}<<\r"
+    apt-get install -y apticron > $out 2>&1
+    sed -i 's/^EMAIL=.*/'"EMAIL=\"$your_email\"/g" /etc/apticron/apticron.conf
+    sed -i 's/^# SYSTEM=.*/'"SYSTEM=\"$hostname\"/g" /etc/apticron/apticron.conf
+
+    echo -ne "\033[2K" ; printf "\r"
+    echo -ne "Checking Apticron Status: [${green}installed${nc}]\r"
+    echo -ne '\n'
+  fi
+}
+
+install_rkhunter() {
+  check_install RootkitHunter rkhunter rkhunter
+  if [ "$install_rkhunter" = true ] && [ "$rkhunter" = true ]; then
+    sleep 2
+    echo -ne "Checking Rootkit Hunter Status: [${red}not installed${nc}] >> ${blue}begin setup ${nc}<<\r"
+    apt-get install -y rkhunter > $out 2>&1
+    sed -i 's/^#MAIL-ON-WARNING.*/MAIL-ON-WARNING="'$your_email'"/' /etc/rkhunter.conf
+    sed -i 's/^WEB_CMD=.*/'"WEB_CMD=\"\"/g" /etc/rkhunter.conf
+    sed -i 's/^MIRRORS_MODE=.*/MIRRORS_MODE=0/' /etc/rkhunter.conf
+    sed -i 's/^UPDATE_MIRRORS=.*/UPDATE_MIRRORS=1/' /etc/rkhunter.conf
+    rkhunter --propupd > $out 2>&1
+    rkhunter --update > $out 2>&1
+    rkhunter -c --cronjob > $out 2>&1
+    rkhunter -c --sk --display-logfile > $out 2>&1
+
+    echo -ne "\033[2K" ; printf "\r"
+    echo -ne "Checking Rootkit Hunter Status: [${green}installed${nc}]\r"
+    echo -ne '\n'
+  fi
+}
+
+secure_end() {
+      endtime=$[$(date +%s)-$starttime]
+      echo ""
+      echo -e "${blue}============================================"
+      echo -e "Lazy Secure: Configuration successful"
+      echo -e "============================================${nc}"
+      echo ""
+      echo "Server is successfully secured"
+      echo "Changed SSH Port to: $ssh_port"
+      echo "Please close connection and login again"
+      echo ""
+      echo -e "${blue}============================================="
+      echo -e "  done (duration: $endtime seconds)"
+      echo -e "=============================================${nc}"
+      echo -ne '\n'
+}
+
+main() {
+  cmdline $string
+  if [ "$xf0_installer" != true ]; then
+    secure_start
+  fi
+  prepare_system
+  change_ssh
+  login_nofification
+  install_fail2ban
+  install_apticron
+  install_rkhunter
+  if [ "$xf0_installer" != true ]; then
+    secure_end
+  fi
+}
+
+main

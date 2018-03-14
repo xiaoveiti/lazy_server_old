@@ -1,0 +1,273 @@
+#!/bin/bash
+
+#################################################
+#
+# Lazy Ts3
+# Version 1.1
+# Copyright 2018, Veit <mail@geekmonkey.de>
+#
+# Tested: 14.03.2018
+#
+#################################################
+
+## Defined vars
+
+serverip=$(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')
+ts_do="install" # by deafault the server will be installed
+ts_mail="false" # by default no mail will be send
+
+# Configure
+
+ts_user="teamspeak"
+ts_dir="/opt/teamspeak"
+ts_download="http://dl.4players.de/ts/releases/3.1.0/teamspeak3-server_linux_amd64-3.1.0.tar.bz2"
+
+## xf0 Default
+out="/dev/null"
+mydir="$(pwd)"
+myname=$(basename $0)
+string="$@"
+
+# Colors
+green='\e[92m'
+red='\e[31m'
+blue='\e[96m'
+nc='\033[0m'
+
+##### Start Script  ####
+
+cmdline() {
+    local arg=
+    for arg
+    do
+        local delim=""
+        case "$arg" in
+            --kill)           args="${args}-k ";;
+            --email)          args="${args}-e ";;
+            --help)           args="${args}-h ";;
+            --debug)          args="${args}-x ";;
+            --screen)         args="${args}-s ";;
+            *) [[ "${arg:0:1}" == "-" ]] || delim="\""
+                args="${args}${delim}${arg}${delim} ";;
+        esac
+    done
+    eval set -- $args
+
+    while getopts "e:hxks" option
+    do
+         case $option in
+         h)
+             usage
+             exit 0
+             ;;
+         x)
+             exec 5>dev-debug.log
+             BASH_XTRACEFD="5"
+             set -x
+             ;;
+         s)
+             out='/dev/tty'
+             ;;
+         k)
+             ts3_kill
+             exit 0
+             ;;
+         e)
+
+             if [[ $args = *"-e"* ]] && [[ $args != *"--"* ]]; then
+               getmail=${args#*-e}
+               ts_email=${getmail%%' '*}
+             elif [[ $args = *"--email"* ]]; then
+               getmail=${args#*"--email"}
+               ts_email=${getmail%%' '*}
+             fi
+             ts_mail="true"
+             ;;
+
+        esac
+    done
+    return 0
+}
+
+usage() {
+    cat <<- EOF
+
+    ----------------------------------------------------
+
+    Usage: $myname options
+
+    Deploy or destroy an ts3 Server within seconds. Login information
+    will be stored in a text file, or send via mail.
+
+    Options:
+       -e  --email    specify email to receive login
+       -k  --kill   delete server include all files
+       -s  --screen		show terminal output
+       -x  --debug		debug (dev-debug.log )
+       -h  --help		show this help
+
+    Examples:
+       Specify email :
+       $myname -m<mail@domain.tld>
+       $myname --mail<mail@domain.tld>
+EOF
+}
+
+ts3_start() {
+  starttime=$(date +%s)
+  echo ""
+  echo -e "${blue}============================================"
+  echo -e "  Lazy Teamspeak 3 Server:"
+  echo -e "============================================${nc}"
+  echo -ne '\n'
+}
+
+install_ts3() {
+  adduser --disabled-password --gecos "" teamspeak > $out 2>&1
+  mkdir $ts_dir
+  wget $ts_download > $out 2>&1
+  tar -xvf teamspeak3-server_linux*.tar.bz2 -C $ts_dir --strip-components=1 > $out 2>&1
+  # Teamspeak requieres to accept the license since version 3.1
+  touch $ts_dir/.ts3server_license_accepted
+  # I still have no fucking idea for what this file is good, ...
+  # but the server seems to not start without
+  touch /dev/shm/7gbhujb54g8z9hu43jre8
+  chown -R $ts_user $ts_dir
+  su $ts_user -c $ts_dir/ts3server_minimal_runscript.sh > teamspeak_output.txt 2>&1
+  yes "" | echo -ne "\r"
+}
+
+ts3_login() {
+  ts3_output=$(cat teamspeak_output.txt)
+  gettoken=${ts3_output#*token=}
+  token=$(echo $gettoken| cut -d ' ' -f 1) 
+  getlogin=${ts3_output#*loginname= }
+  splitlogin=$(echo $getlogin| cut -d ' ' -f 1) 
+  login=${splitlogin//[,\"]/}
+  getpw=${ts3_output#*password= }
+  splitpw=$(echo $getpw| cut -d ' ' -f 1) 
+  pw=${splitpw//[\"]/}
+    cat > ts3_login.txt <<EOF
+Server: $(hostname)
+IP: $serverip
+
+Server Query:
+Login: $login
+Password: $pw
+
+Server Auth:
+Token: $token
+
+Notice: Please keep your token private!
+
+Script usage: ts3 <start|stop|restart|status>
+EOF
+}
+
+ts3_script() {
+    cat > /etc/init.d/teamspeak3 <<EOF
+ #!/bin/sh
+ ### BEGIN INIT INFO
+ # Provides: 		teamspeak3
+ # Required-Start: 	\$local_fs \$network
+ # Required-Stop:	\$local_fs \$network
+ # Default-Start: 	2 3 4 5
+ # Default-Stop: 	0 1 6
+ # Description: 		Teamspeak 3 Server
+ ### END INIT INFO
+
+USER="$ts_user"
+DIR="$ts_dir"
+
+###### Teamspeak 3 server start/stop script ######
+
+case "\$1" in
+start)
+su \$USER -c "\${DIR}/ts3server_startscript.sh start"
+;;
+stop)
+su \$USER -c "\${DIR}/ts3server_startscript.sh stop"
+;;
+restart)
+su \$USER -c "\${DIR}/ts3server_startscript.sh restart"
+;;
+status)
+su \$USER -c "\${DIR}/ts3server_startscript.sh status"
+;;
+*)
+echo "Usage: {start|stop|restart|status}" >&2
+exit 1
+;;
+esac
+exit 0
+EOF
+  chmod 755 /etc/init.d/teamspeak3
+  update-rc.d teamspeak3 defaults
+  cp /etc/init.d/teamspeak3 /usr/local/bin/ts3
+  chmod +x /usr/local/bin/ts3
+}
+
+ts3_run() {
+  sleep 5
+  # again this fuckn' file
+  # need to install, but server crashes with
+  rm /dev/shm/7gbhujb54g8z9hu43jre8 > $out 2>&1
+  ts3 start
+}
+
+ts3_mail() {
+  mail -s 'Teamspeak 3 Server Login' $ts_email < ts3_login.txt
+  echo ""
+  echo "Your login information has been sent to $ts_email"
+  echo -e "You also can find them in ${blue}$mydir/ts3_login.txt${nc}"
+  echo -ne '\n'
+}
+
+ts3_clean() {
+  rm teamspeak*
+}
+
+ts3_kill() {
+  /etc/init.d/teamspeak3 stop > $out 2>&1
+  update-rc.d teamspeak3 remove
+  rm /etc/init.d/teamspeak3 > $out 2>&1
+  rm /dev/shm/7gbhujb54g8z9hu43jre8 > $out 2>&1
+  rm /usr/local/bin/ts3 > $out 2>&1
+  deluser $ts_user > $out 2>&1
+  rm -rf $ts_dir > $out 2>&1
+  rm -rf /home/$ts_user > $out 2>&1
+}
+
+ts3_end() {
+    endtime=$[$(date +%s)-$starttime]
+    echo -e "${blue}============================================="
+    echo -e "  done (duration: $endtime seconds)"
+    echo -e "=============================================${nc}"
+    echo -ne '\n'
+    echo "$hostname was succesfully configured"
+    echo ""
+}
+
+main() {
+  cmdline $string
+  if [ "$xf0_installer" != true ]; then
+    ts3_start
+  fi
+  install_ts3
+  ts3_login
+  ts3_script
+  ts3_run
+  if [ "$ts_mail" = true ]; then
+    ts3_mail
+  elif  [ "$ts_mail" = false ]; then
+    echo ""
+    echo -e "Please check ${blue}$mydir/ts3_login.txt${nc}"
+    echo -ne '\n'
+  fi
+  ts3_clean
+  if [ "$xf0_installer" != true ]; then
+  ts3_end
+  fi
+}
+
+main

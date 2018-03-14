@@ -1,0 +1,228 @@
+#!/bin/bash
+
+#################################################
+#
+# Lazy NGiNX
+# Version 1.3a
+# Copyright 2018, Veit <mail@geekmonkey.de>
+#
+# Tested: 14.03.2018
+#
+#################################################
+
+## Configure
+
+
+##### DO NOT EDIT BELOW THIS LINE  ####
+
+## xf0 Default
+out="/dev/null"
+mydir="$(pwd)"
+myname=$(basename $0)
+string="$@"
+
+# Colors
+green='\e[92m'
+red='\e[31m'
+blue='\e[96m'
+nc='\033[0m'
+
+##### Start Script  ####
+
+cmdline() {
+    local arg=
+    for arg
+    do
+        local delim=""
+        case "$arg" in
+            --help)           args="${args}-h ";;
+            --debug)          args="${args}-x ";;
+            --screen)         args="${args}-s ";;
+            *) [[ "${arg:0:1}" == "-" ]] || delim="\""
+                args="${args}${delim}${arg}${delim} ";;
+        esac
+    done
+    eval set -- $args
+
+    while getopts "hxs" option
+    do
+         case $option in
+         h)
+             usage
+             exit 0
+             ;;
+         x)
+             exec 5>dev-debug.log
+             BASH_XTRACEFD="5"
+             set -x
+             ;;
+         s)
+             out='/dev/tty'
+             ;;
+
+        esac
+    done
+    return 0
+}
+
+usage() {
+    cat <<- EOF
+
+    ----------------------------------------------------
+
+    Usage: $myname options
+
+    Build NgiNX from Source, include cache_purge plugin.
+
+    Options:
+       -s  --screen		show terminal output
+       -x  --debug		debug (dev-debug.log )
+       -h  --help		show this help
+
+    Examples:
+       Debug script :
+       $myname -x
+       $myname --debug
+EOF
+}
+
+check_install() { # syntax: function <name> <pkg name> install_<short name>
+    echo -ne "Checking $1 Status:\r"
+    if [ $(dpkg-query -W -f='${Status}' $2 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
+      sleep 1
+      echo -ne "Checking $1 Status: [${green}installed${nc}]\r"
+      export install_$3="false" #declare -g | eval
+    else
+      sleep 1
+      echo -ne "Checking $1 Status: [${red}not installed${nc}]\r"
+      export install_$3="true"
+    fi
+}
+
+ngx_start() {
+    starttime=$(date +%s)
+    echo ""
+    echo -e "${blue}============================================"
+    echo -e "  Lazy NGiNX"
+    echo -e "============================================${nc}"
+    echo ""
+}
+
+ngx_source(){
+    wget http://nginx.org/keys/nginx_signing.key > $out 2>&1
+    apt-key add nginx_signing.key > $out 2>&1
+    echo "deb http://nginx.org/packages/mainline/debian/ $(lsb_release -sc) nginx" >> /etc/apt/sources.list.d/nginx.list
+    echo "deb-src http://nginx.org/packages/mainline/debian/ $(lsb_release -sc) nginx" >> /etc/apt/sources.list.d/nginx.list
+    rm nginx_signing.key
+    apt-get update > $out 2>&1
+}
+
+ngx_build() {
+    # Folder
+    ngx_workdir="nginx_source"
+    if [ -d "${ngx_workdir}" ] ; then
+      rm -Rf ${ngx_workdir}
+    fi
+    mkdir -p ${ngx_workdir}
+
+    # Getting Source
+    cd ${ngx_workdir}/
+    apt-get build-dep -y nginx > $out 2>&1
+    apt-get source -y nginx > $out 2>&1
+    cd nginx-*
+    ngx_build="$(pwd)"
+
+    # Nginx Cache Purge Module
+    mkdir -p ${ngx_build}/debian/modules
+    wget -q --no-check-certificate https://github.com/FRiCKLE/ngx_cache_purge/zipball/master -O "${ngx_build}/debian/modules/ngx_cache_purge.zip" > $out 2>&1
+    unzip ${ngx_build}/debian/modules/ngx_cache_purge.zip -d ${ngx_build}/debian/modules/ > $out 2>&1
+    mv ${ngx_build}/debian/modules/FR* ${ngx_build}/debian/modules/ngx_cache_purge
+    rm ${ngx_build}/debian/modules/ngx_cache_purge.zip
+
+    # Configure Ngnix Build
+    ngx_sedpath=$(echo $ngx_build | sed 's_/_\\/_g')
+    purge="--with-file-aio\ \--add-module=${ngx_sedpath}\/debian\/modules\/ngx_cache_purge"
+    sed -ie s/--user=nginx/--user=www-data/g ${ngx_build}/debian/rules
+    sed -ie s/--group=nginx/--group=www-data/g ${ngx_build}/debian/rules
+    sed -ie "s/--with-file-aio/$ngx_mod_purge/g" ${ngx_build}/debian/rules
+    #sed -i '/--with-file-aio \\/i--add-module='"$ngx_build"'/debian/modules/ngx_cache_purge \\' ${ngx_build}/debian/rules
+
+    # Build
+    cd $ngx_build
+    dpkg-buildpackage -b > $out 2>&1
+
+    # Install
+    cd /$mydir/$ngx_workdir
+    dpkg -i nginx_*.deb > $out 2>&1
+
+    # Nginx Module
+    apt-get install -y nginx-module-geoip > $out 2>&1
+
+    # Cleanup
+    rm -rf $mydir/$ngx_workdir
+    cd $mydir
+}
+
+ngx_first_build(){
+    # Nginx Dir
+    mkdir /var/www > $out 2>&1
+    chown -R www-data:www-data /var/www > $out 2>&1
+    mkdir /etc/nginx/cfg > $out 2>&1
+    mkdir /etc/nginx/sites-available > $out 2>&1
+    mkdir /etc/nginx/sites-enabled > $out 2>&1
+    mkdir /var/cache/nginx/fastcgi_cache > $out 2>&1
+    chown -R www-data:www-data /var/cache/nginx > $out 2>&1
+    mkdir /etc/nginx/htpasswd > $out 2>&1
+
+    # Nginx hold update
+    echo nginx hold|dpkg --set-selections > $out 2>&1
+    aptitude hold nginx > $out 2>&1
+    echo nginx-module-geoip hold |dpkg --set-selections > $out 2>&1
+    aptitude hold nginx-module-geoip > $out 2>&1
+}
+
+ngx_end() {
+    endtime=$[$(date +%s)-$starttime]
+    echo ""
+    echo -e "${blue}================================================"
+    echo -e "  Configure NGiNX: done (duration: $endtime seconds)"
+    echo -e "================================================${nc}"
+    echo ""
+}
+
+ngx_install() {
+    check_install NGiNX nginx ngx
+    if [ "$install_ngx" = true ]; then
+      sleep 2
+      echo -ne "Checking NGiNX Status: [${red}not installed${nc}] >> ${blue}begin setup ${nc}<<\r"
+      ngx_source
+      ngx_build
+      ngx_first_build
+      echo -ne "\033[2K" ; printf "\r"
+      echo -ne "Checking NGiNX Status: [${green}installed${nc}]\r"
+      echo -ne '\n'
+    fi
+    if [ "$install_ngx" = false ]; then
+      sleep 2
+      echo -ne "Checking NGiNX Status: [${green}installed${nc}] >> ${blue}begin update ${nc}<<\r"
+      ngx_build
+      echo -ne "\033[2K" ; printf "\r"
+      echo -ne "Checking NGiNX Status: [${green}updated${nc}]\r"
+      echo -ne '\n'
+    fi
+}
+
+
+
+main() {
+    cmdline $string
+    if [ "$include_lemp" != true ]; then
+        ngx_start
+    fi
+    ngx_install
+    if [ "$include_lemp" != true ]; then
+      ngx_end
+    fi
+}
+
+main

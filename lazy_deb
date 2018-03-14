@@ -1,0 +1,151 @@
+#!/bin/bash
+
+#################################################
+#
+# Lazy Debian
+# Version 1.1
+# Copyright 2018, Veit <mail@geekmonkey.de>
+#
+# Tested: 24.02.2018
+#
+#################################################
+
+## Configure
+
+serverip=$(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')
+install_postfix="true"
+
+##### DO NOT EDIT BELOW THIS LINE  ####
+
+## xf0 Default
+starttime=$(date +%s)
+mydir="$(pwd)"
+myname=$(basename $0)
+string="$@"
+
+# Colors
+green='\e[92m'
+red='\e[31m'
+blue='\e[96m'
+nc='\033[0m'
+
+##### Start Script  ####
+
+cmdline() {
+    local arg=
+    for arg
+    do
+        local delim=""
+        case "$arg" in
+            --nomail)         args="${args}-n ";;
+            --help)           args="${args}-h ";;
+            --debug)          args="${args}-x ";;
+            --screen)         args="${args}-s ";;
+            *) [[ "${arg:0:1}" == "-" ]] || delim="\""
+                args="${args}${delim}${arg}${delim} ";;
+        esac
+    done
+    eval set -- $args
+
+    while getopts "hxs" option
+    do
+         case $option in
+         h)
+             usage
+             exit 0
+             ;;
+         x)
+             exec 5>dev-debug.log
+             BASH_XTRACEFD="5"
+             set -x
+             ;;
+         s)
+             out='/dev/tty'
+             ;;
+        esac
+    done
+    return 0
+}
+
+usage() {
+    cat <<- EOF
+
+    ----------------------------------------------------
+
+    Usage: $myname options
+
+    Basic Debian minimal, netinstall configuration
+
+    Options:
+       -n  --nomail 	don't install postifx
+       -s  --screen		show terminal output
+       -x  --debug		debug (dev-debug.log )
+       -h  --help		show this help
+
+
+    Examples:
+       Debug script :
+       $myname -x
+       $myname --debug
+
+EOF
+}
+
+deb_welcome() {
+      echo ""
+      echo -e "${blue}============================================"
+      echo -e "Lazy Debian Config:"
+      echo -e "============================================${nc}"
+      # Input
+      echo ""
+      read -p "Enter the servername: " servername
+      read -p "Enter the hostname: " hostname
+      echo ""
+      echo -e "${blue}Lazy Debian: Begin Configuration"
+      echo -e "============================================${nc}"
+      echo -ne '\n'
+}
+
+host() {
+      echo "$hostname" > /etc/hostname
+      cp /etc/hostname /etc/mailname
+      hostname -F /etc/hostname
+      sed -i '/127.0.1.1/c\'127.0.1.1'	'$hostname'	'$servername'  ' /etc/hosts
+      sed -i '/'$serverip'/c\'$serverip'	'$hostname'	'$servername'  ' /etc/hosts
+}
+
+postfix() {
+        debconf-set-selections <<< "postfix postfix/mailname string $hostname"
+        debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
+        apt-get install -y mailutils > $out 2>&1
+        apt-get install -y postfix > $out 2>&1
+}
+
+deb_end() {
+        # Get Time
+        endtime=$[$(date +%s)-$starttime]
+
+        # Output
+        echo -e "${blue}============================================="
+        echo -e "Basic configuration successful (duration: $endtime seconds)"
+        echo -e "=============================================${nc}"
+        echo -ne '\n'
+        echo "$hostname was succesfully configured"
+        echo ""
+}
+
+main() {
+    cmdline $string
+    if [ "$xf0_installer" != true ]; then
+      deb_welcome
+    fi
+    host
+    if [ "$install_postfix" = true ]; then
+      postfix
+    fi
+    if [ "$xf0_installer" != true ]; then
+      deb_end
+    fi
+}
+
+main

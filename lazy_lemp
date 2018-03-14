@@ -1,0 +1,314 @@
+#!/bin/bash
+
+#################################################
+#
+# Lazy LEMP
+# Version 1.5
+# Copyright 2018, Veit <mail@geekmonkey.de>
+#
+# Tested: 14.03.2018
+#
+#################################################
+
+## Configure
+
+php="7.2" # set PHP Version, check Source
+mariadb="10.2" # set MariaDB Version, check Source
+install_pma="true" # install phpMyAdmin
+pma_dir="/var/www/phpmyadmin" # set phpMyAdmin dir
+
+##### DO NOT EDIT BELOW THIS LINE  ####
+
+## xf0 Default
+out="/dev/null"
+mydir="$(pwd)"
+myname=$(basename $0)
+string="$@"
+sql_nopw="false"
+
+# Colors
+green='\e[92m'
+red='\e[31m'
+blue='\e[96m'
+nc='\033[0m'
+
+##### Start Script  ####
+
+cmdline() {
+    local arg=
+    for arg
+    do
+        local delim=""
+        case "$arg" in
+            --password)       args="${args}-p ";;
+            --noadmin)        args="${args}-n ";;
+            --help)           args="${args}-h ";;
+            --debug)          args="${args}-x ";;
+            --screen)         args="${args}-s ";;
+            *) [[ "${arg:0:1}" == "-" ]] || delim="\""
+                args="${args}${delim}${arg}${delim} ";;
+        esac
+    done
+    eval set -- $args
+
+    while getopts "p:hxsn" option
+    do
+         case $option in
+         h)
+             usage
+             exit 0
+             ;;
+         x)
+             exec 5>dev-debug.log
+             BASH_XTRACEFD="5"
+             set -x
+             ;;
+         s)
+             out='/dev/tty'
+             ;;
+         n)
+             install_pma="false"
+             ;;
+         p)
+             if [[ $args = *"-p"* ]] && [[ $args != *"--"* ]]; then
+               getpw=${args#*-p}
+               sql_root_pw=${getpw%%' '*}
+             elif [[ $args = *"--password"* ]]; then
+               getpw=${args#*"--password"}
+               sql_root_pw=${getpw%%' '*}
+             fi
+             sql_nopw="true"
+             ;;
+
+        esac
+    done
+    return 0
+}
+
+usage() {
+    cat <<- EOF
+
+    ----------------------------------------------------
+
+    Usage: $myname options
+
+    Setup and configure a fully functional LEMP stack,
+    incl. phpMyAdmin (optional).
+
+    Options:
+       -p  --password		specifiy mysql root password
+       -n  --noadmin		don't install phpMyAdmin
+       -s  --screen		show terminal output
+       -x  --debug		debug (dev-debug.log )
+       -h  --help		show this help
+
+
+    Examples:
+       Debug script :
+       $myname -x
+       $myname --debug
+
+       Specify an MySQL root Password:
+       $myname -p<your password>
+       $myname -password<your password>
+
+EOF
+}
+
+check_install() { # syntax: function <name> <pkg name> install_<short name>
+    echo ""
+    echo -ne "Checking $1 Status:\r"
+    if [ $(dpkg-query -W -f='${Status}' $2 2>/dev/null | grep -c "ok installed") -eq 1 ]; then
+      sleep 1
+      echo -ne "Checking $1 Status: [${green}installed${nc}]\r"
+      echo -ne '\n'
+      export install_$3="false" #declare -g | eval
+    else
+      sleep 1
+      echo -ne "Checking $1 Status: [${red}not installed${nc}]\r"
+      export install_$3="true"
+    fi
+}
+
+lemp_start() {
+      starttime=$(date +%s)
+      echo ""
+      echo -e "${blue}============================================"
+      echo -e "  Lazy LEP Stack includes:"
+      echo -e "============================================${nc}"
+      echo ""
+      echo -e " ${blue}\xe2\x98\x85${nc} NGiNX (mainline)"
+      echo -e " ${blue}\xe2\x98\x85${nc} php$php-FPM"
+      echo -e "   ${blue}-${nc} GD, MySQL, CURL, OPcache, XML"
+      echo -e "   ${blue}-${nc} ZIP, INTL, Mbstring, BZ2, DEV"
+      echo -e " ${blue}\xe2\x98\x85${nc} MariaDB $mariadb + phpmyAdmin (optional)"
+      echo ""
+      echo -e "${blue}============================================${nc}"
+      echo -ne '\n'
+    if [ "$sql_nopw" = false ]; then
+      echo -e "${blue}  MariaDB (SQL) Configuration:"
+      echo -e "============================================${nc}"
+      echo ""
+      read -p "Enter MySQL password: " sql_root_pw
+      echo ""
+    fi
+}
+
+prepare_system() {
+    echo -ne "Prepare System: >> ${blue}doing update ${nc}<<\r"
+    apt-get update > $out 2>&1
+    echo -ne "Prepare System: >> ${blue}install packages ${nc}<<\r"
+    apt-get install -y gcc build-essential zlib1g-dev libpcre3 libpcre3-dev libbz2-dev libssl-dev tar unzip git zip pkg-config curl > $out 2>&1
+    echo -ne "\033[2K" ; printf "\r"
+    echo -ne "Prepare System: [${blue}done${nc}]\r"
+    echo -ne '\n'
+}
+
+install_ngx() {
+    chmod +x $mydir/lazy_ngx
+    export include_lemp="true"
+    echo ""
+    $mydir/lazy_ngx
+}
+
+install_mariadb() {
+    check_install MariaDB mariadb-server mariadb
+    if [ "$install_mariadb" = true ]; then
+
+      # Output
+      sleep 2
+      echo -ne "Checking MariaDB Status: [${red}not installed${nc}] >> ${blue}begin setup ${nc}<<\r"
+
+      # Source List
+      apt-get install -y software-properties-common dirmngr > $out 2>&1
+      apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8 > $out 2>&1
+      echo "deb [arch=amd64,i386,ppc64el] http://ftp.hosteurope.de/mirror/mariadb.org/repo/10.2/debian $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/MariaDB.list > $out 2>&1
+      apt-get update > $out 2>&1
+
+      # MariaDB Install
+      export DEBIAN_FRONTEND=noninteractive > $out 2>&1
+      debconf-set-selections <<< 'mariadb-server-$mariadb mysql-server/root_password password root' > $out 2>&1
+      debconf-set-selections <<< 'mariadb-server-$mariadb mysql-server/root_password_again password root' > $out 2>&1
+      apt-get install -q -y mariadb-server > $out 2>&1
+
+      # MariaDB Config
+      sed -i 's/^bind-address.*/'"#bind-address = 127.0.0.1/g"  /etc/mysql/my.cnf
+      sed -i '/^#bind-address.*/a\skip-networking\' /etc/mysql/my.cnf
+      service mysql restart > $out 2>&1
+
+      # MariaDB Secure Install
+      apt-get -y install expect > $out 2>&1
+      secure_mysql=$(expect -c "
+      set timeout 10
+      spawn mysql_secure_installation
+      expect \"Enter current password for root (enter for none):\"
+      send \"root\r\"
+      expect \"Change the root password?\"
+      send \"y\r\"
+      expect \"New password:\"
+      send \"$sql_root_pw\r\"
+      expect \"Re-enter new password:\"
+      send \"$sql_root_pw\r\"
+      expect \"Remove anonymous users?\"
+      send \"y\r\"
+      expect \"Disallow root login remotely?\"
+      send \"y\r\"
+      expect \"Remove test database and access to it?\"
+      send \"y\r\"
+      expect \"Reload privilege tables now?\"
+      send \"y\r\"
+      expect eof
+      ")
+      echo "$secure_mysql" > $out 2>&1
+      apt-get -y remove expect > $out 2>&1
+
+      #Final Output
+      echo -ne "\033[2K" ; printf "\r"
+      echo -ne "Checking MariaDB Status: [${green}installed${nc}]\r"
+      echo -ne '\n'
+    fi
+}
+
+install_php() {
+    check_install PHP-FPM php$php-fpm php
+    if [ "$install_php" = true ]; then
+
+      # Output
+      sleep 2
+      echo -ne "Checking PHP-FPM Status: [${red}not installed${nc}] >> ${blue}begin setup ${nc}<<\r"
+
+      # Source List | sury.org Repo
+      apt-get install -y apt-transport-https lsb-release ca-certificates > $out 2>&1
+      wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg > $out 2>&1
+      echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list  > $out 2>&1
+      apt-get update > $out 2>&1
+
+      # PHP7.x Installation
+      apt-get install -y php$php-fpm > $out 2>&1
+      apt-get install -y php$php-gd php$php-mysql php$php-curl php$php-opcache php$php-dev > $out 2>&1
+      apt-get install -y php$php-xml php$php-zip php$php-intl php$php-mbstring php$php-bz2 > $out 2>&1
+      apt-get install -y libmcrypt-dev libreadline-dev > $out 2>&1
+
+      # PHP7.x Config
+      sed -i 's/^upload_max_filesize .*/'"upload_max_filesize = 10M/g"  /etc/php/$php/fpm/php.ini
+      sed -i 's/^post_max_size .*/'"post_max_size = 12M/g"  /etc/php/$php/fpm/php.ini
+      sed -i 's/^allow_url_fopen .*/'"allow_url_fopen = Off/g"  /etc/php/$php/fpm/php.ini
+      service php$php-fpm restart
+
+      # Final Output
+      echo -ne "\033[2K" ; printf "\r"
+      echo -ne "Checking PHP-FPM Status: [${green}installed${nc}]\r"
+      echo -ne '\n'
+    fi
+  }
+
+install_phpmyadmin() {
+    if [ "$install_pma" = true ]; then
+      # Install Source
+      git clone --depth=1 --branch=STABLE https://github.com/phpmyadmin/phpmyadmin.git /usr/share/phpmyadmin > $out 2>&1
+      ln -s /usr/share/phpmyadmin $pma_dir
+      chown -R www-data:www-data $pma_dir
+      randomBlowfishSecret=`openssl rand -base64 32`; > $out 2>&1
+      sed -e "s|cfg\['blowfish_secret'\] = ''|cfg['blowfish_secret'] = '$randomBlowfishSecret'|" /usr/share/phpmyadmin/config.sample.inc.php > /usr/share/phpmyadmin/config.inc.php
+      service nginx restart > $out 2>&1
+      # install dependencies using Composer tool
+      curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer > $out 2>&1
+      cd $pma_dir
+      composer update --no-dev > $out 2>&1
+      # Update Script
+      cat > /etc/cron.weekly/pma_update <<EOF
+#!/bin/bash
+
+cd /usr/share/phpmyadmin
+git pull -q origin STABLE
+EOF
+    chmod +x /etc/cron.weekly/pma_update
+    echo ""
+    echo -e "Install phpMyAdmin: [${blue}done${nc}]\n"
+  fi
+}
+
+lemp_end() {
+      endtime=$[$(date +%s)-$starttime]
+      echo -e "${blue}================================================"
+      echo -e "  LEMP Setup: done (duration: $endtime seconds)"
+      echo -e "================================================${nc}"
+      echo ""
+}
+
+main() {
+  cmdline $string
+  if [ "$xf0_installer" != true ]; then
+    lemp_start
+  fi
+  prepare_system
+  install_ngx
+  install_mariadb
+  install_php
+  install_phpmyadmin
+  if [ "$xf0_installer" != true ]; then
+    lemp_end
+  fi
+}
+
+main
