@@ -13,7 +13,6 @@
 ## Defined vars
 
 serverip=$(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')
-ts_do="install" # by deafault the server will be installed
 ts_mail="false" # by default no mail will be send
 
 # Configure
