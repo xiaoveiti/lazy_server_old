@@ -11,8 +11,9 @@
 #################################################
 
 ## Configure
-pi_dir=/opt/pihole
-pi_webdir=/var/www/xf0/pihole
+
+pi_dir="/opt/pihole"
+pi_webdir="/var/www/xf0/pihole"
 
 ##### DO NOT EDIT BELOW THIS LINE  ####
 
