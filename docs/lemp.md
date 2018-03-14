@@ -33,20 +33,37 @@ pma_dir="/var/www/phpmyadmin"
 ```
 ./lazy_lemp <option>
 
-   -p  --password   specifiy mysql root password
-   -n  --noadmin    don't install phpMyAdmin
-   -s  --screen   show terminal output
-   -x  --debug   (dev-debug.log)
-   -h  --help   show this help
+  -p  --password   specifiy mysql root password
+  -n  --noadmin    don't install phpMyAdmin
+  -s  --screen     show terminal output
+  -x  --debug      (dev-debug.log)
+  -h  --help       show this help
 ```
 
 Examples:
-```
-   Debug script :
-   ./lazy_lemp -x
-   ./lazy_lemp --debug
 
-   Specify an MySQL root Password:
-   ./lazy_lemp -p<your password>
-   ./lazy_lemp -password<your password>
+Debug script :
 ```
+ ./lazy_lemp -x
+ ./lazy_lemp --debug
+```
+
+Specify an MySQL root Password:
+```
+ ./lazy_lemp -p<your password>
+ ./lazy_lemp -password<your password>
+```
+
+#### Author
+
+* **Veit** - [gxf0](https://github.com/gxf0)
+
+#### License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+#### Acknowledgments
+
+* feel free to copy and adjust the scripts for your need
+* feel free to improve the scripts - maybe you could also notice me - haha
+* feel free to contact me, if you have any question

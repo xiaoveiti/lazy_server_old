@@ -30,20 +30,21 @@ ts_mail="false" # by default no mail will be send
 
 ```
 ./lazy_ts3 <option>
+
+  -e  --email    specify email to receive login
+  -k  --kill     delete server include all files
+  -s  --screen	 show terminal output
+  -x  --debug		 debug (dev-debug.log )
+  -h  --help		 show this help
 ```
 
-Options:
-   -e  --email    specify email to receive login
-   -k  --kill   delete server include all files
-   -s  --screen		show terminal output
-   -x  --debug		debug (dev-debug.log )
-   -h  --help		show this help
-
 Examples:
-   Specify email :
-   $myname -m<mail@domain.tld>
-   $myname --mail<mail@domain.tld>
 
+Specify email :
+```
+ ./lazy_ts3 -m<mail@domain.tld>
+ ./lazy_ts3 --mail<mail@domain.tld>
+```
 ### Usage
 
 Don't forget to make the script executable.
@@ -54,27 +55,21 @@ Run script
 ```
 ./chmod +x lazy_ts
 ```
-### Script options
-```
-./chmod +x lazy_ts -s [show output to ssh]
-./chmod +x lazy_ts -d [debug script]
-./chmod +x lazy_ts -e<mail@domain.tld> [specify mail to receive login information]
-./chmod +x lazy_ts -kill [stop and destroy the whole teamspeak server]
-```
+
 ### Manage Teamspeak 3 Server
 ```
 ts3 <start|stop|restart|status>
 ```
 
-## Author
+#### Author
 
 * **Veit** - [gxf0](https://github.com/gxf0)
 
-## License
+#### License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-## Acknowledgments
+#### Acknowledgments
 
 * feel free to copy and adjust the scripts for your need
 * feel free to improve the scripts - maybe you could also notice me - haha
