@@ -31,11 +31,11 @@ ts_mail="false" # by default no mail will be send
 ```
 ./lazy_ts3 <option>
 
-  -e  --email    specify email to receive login
-  -k  --kill     delete server include all files
-  -s  --screen	 show terminal output
-  -x  --debug		 debug (dev-debug.log )
-  -h  --help		 show this help
+  -e  --email     specify email to receive login
+  -k  --kill      delete server include all files
+  -s  --screen	  show terminal output
+  -x  --debug		  debug (dev-debug.log )
+  -h  --help		  show this help
 ```
 
 Examples:
@@ -44,16 +44,6 @@ Specify email :
 ```
  ./lazy_ts3 -m<mail@domain.tld>
  ./lazy_ts3 --mail<mail@domain.tld>
-```
-### Usage
-
-Don't forget to make the script executable.
-```
-chmod +x lazy_ts
-```
-Run script
-```
-./chmod +x lazy_ts
 ```
 
 ### Manage Teamspeak 3 Server
