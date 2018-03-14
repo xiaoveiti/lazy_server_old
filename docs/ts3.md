@@ -16,6 +16,7 @@ chmod +x lazy_ts3
 You can define several variables at the beginning of the script, but be sure
 to also adjust the correspondingly tar command, if you change the file.tar.bz2.
 
+```
 ts_user="teamspeak"  
 ts_dir="/opt/teamspeak"  
 
@@ -23,6 +24,7 @@ ts_download="http://dl.4players.de/ts/releases/3.1.0/teamspeak3-server_linux_amd
 
 serverip=$(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')
 ts_mail="false" # by default no mail will be send
+```
 
 ### Script Options
 

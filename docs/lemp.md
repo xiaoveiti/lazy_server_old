@@ -20,12 +20,13 @@ chmod +x lazy_lemp
 You can define several variables at the beginning of the script, but be sure
 to also adjust the correspondingly source list.
 
+```
 php="7.2"
 mariadb="10.2"
 
 install_pma="true"
 pma_dir="/var/www/phpmyadmin"
-
+```
 
 ### Script Options
 
