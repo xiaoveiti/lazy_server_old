@@ -15,11 +15,19 @@ Setup and configure a fully functional LEMP stack, which includes:
   - ZIP, INTL, Mbstring, BZ2, DEV
 * MariaDB 10.2 + phpmyAdmin (optional)
 
-### Prerequisites
+Most of the packages will be updated via apt, but if you want to keep your NGiNX Setting up-to-date as well,
+use the [lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md) script from time to time to update it. 
 
-Don't forget to make the script executable.
+### Usage
+
+You can either clone the completely repo, or just download the scripts you need.
+
 ```
+wget https://github.com/gxf0/lazy_server/blob/master/scripts/lazy_lemp
+wget https://github.com/gxf0/lazy_server/blob/master/scripts/lazy_ngx
 chmod +x lazy_lemp
+chmod +x lazy_ngx
+./lazy_lemp
 ```
 
 ### Optional Configure
