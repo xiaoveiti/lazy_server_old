@@ -175,9 +175,9 @@ ngx_first_build(){
     mkdir /etc/nginx/htpasswd > $out 2>&1
 
     # Nginx hold update
-    echo nginx hold|dpkg --set-selections > $out 2>&1
+    echo nginx hold | dpkg --set-selections > $out 2>&1
     aptitude hold nginx > $out 2>&1
-    echo nginx-module-geoip hold |dpkg --set-selections > $out 2>&1
+    echo nginx-module-geoip hold | dpkg --set-selections > $out 2>&1
     aptitude hold nginx-module-geoip > $out 2>&1
 }
 
