@@ -117,4 +117,4 @@ echo -ne "
 
 logo
 echo "A First Method"
-read -s -n 1 -p "Press any key to continue..."
+read -n 1 -r -s -p "Press any key to continue..."
