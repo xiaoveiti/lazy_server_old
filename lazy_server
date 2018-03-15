@@ -116,5 +116,4 @@ echo -ne "
 }
 
 logo
-read -p "Press any key to continue... " -n1 -s
-echo "test"
+read -rsn1 -p"Press any key to continue";echo
