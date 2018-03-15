@@ -117,4 +117,5 @@ echo -ne "
 }
 
 logo
-read -rsn1 -p "Press any key to continue"; echo
+echo "A First Method"
+read -s -n 1 -p "Press any key to continue..."
