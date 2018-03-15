@@ -116,5 +116,5 @@ echo -ne "
 }
 
 logo
-read -n 1 -s -r -p "Press any key to continue"
+read -p "Press any key to continue... " -n1 -s
 echo "test"
