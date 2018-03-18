@@ -141,7 +141,7 @@ lazy_menue_create_config() {
   cfg_file_name=$(whiptail --inputbox "Choose name for your config." 8 78 xf0.de \
               --title "Configure: Create Config" 3>&1 1>&2 2>&3)
   cfg_file="${cfg_file_name}.cfg"
-  cp $mydir_installer/lazy.cfg.sample $cfg_file
+  cp $mydir_installer/lazy.cfg.sample $mydir_installer/$cfg_file
 
   whiptail --title "Create Config" --checklist --separate-output "Choose:" 15 60 6 \
   "Basic Configuration" "" on \
