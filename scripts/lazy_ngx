@@ -152,7 +152,7 @@ ngx_build() {
     dpkg-buildpackage -b > $out 2>&1
 
     # Install
-    cd /$mydir_ngx/$ngx_workdir
+    cd $mydir_ngx/$ngx_workdir
     dpkg -i nginx_*.deb > $out 2>&1
 
     # Nginx Module
