@@ -159,6 +159,7 @@ main() {
       deb_end
     else
       echo -e "Basic Configuration: [${blue}done${nc}]\n"
+      echo ""
     fi
 }
 
