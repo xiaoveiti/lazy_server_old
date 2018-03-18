@@ -9,11 +9,14 @@
  * * *
 Basic Debian minimal, netinstall configuration
 
-### Prerequisites
+### Usage
 
-Don't forget to make the script executable.
+You can either clone the completely repo, or just download the scripts you need.
+
 ```
+wget https://github.com/gxf0/lazy_server/blob/master/scripts/lazy_deb
 chmod +x lazy_deb
+./lazy_deb
 ```
 
 ### Optional Configure

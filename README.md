@@ -1,5 +1,5 @@
 # lazy_server
-[lazy_server](https://github.com/gxf0/lazy_server/tree/master/README.md) : 
+[lazy_server](https://github.com/gxf0/lazy_server/tree/master/README.md) :
  [lazy_deb](https://github.com/gxf0/lazy_server/tree/master/docs/deb.md) |
  [lazy_lemp](https://github.com/gxf0/lazy_server/tree/master/docs/lemp.md) |
  [lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md) |
@@ -14,6 +14,14 @@ I set up different virtual and dedicated Server on a regular basis. Also, I'm ge
 I am not a professional, so maybe there are better solutions for some tasks, but all of the scripts work for me and before I upload them, I tested them multiple times on different servers.
 
 I am a huge Debian fan, so don't be surprised, most of my scripts are based on apt.
+
+## Usage
+
+If you want to download the whole collection, include the installer, just use the command below and follow the instructions, given in the shell output.
+
+```
+curl -Ssl https://raw.githubusercontent.com/gxf0/lazy_server/master/get | bash
+```
 
 ### Script Collection
 
