@@ -98,7 +98,7 @@ for var in $cfg_content
 }
 
 config_install() {
-    config_read $cfg_file $1
+    config_read $mydir_installer/$cfg_file $1
     if [ "${!1}" = true ]; then
       export xf0_installer="true"
       $mydir_installer/scripts/$1
@@ -123,7 +123,7 @@ check_config() { # not in use
 
 
 lazy_menu_choose_config() {
-  cfg_files=$(ls -1 *.cfg)
+  cfg_files=$(cd $mydir_installer; ls -1 *.cfg)
   for i in $cfg_files
   do
       cfg_list+=("${i}" " " off)
@@ -262,6 +262,11 @@ if (whiptail --title "Configure: done" --yesno "Do you want to run the installer
   fi
 }
 
+config_check_old() {
+  cfg_file="$cfg_file"
+  config_check
+}
+
 lazy_menu() {
     whiptail \
     --title "Lazy_Server" \
@@ -274,11 +279,13 @@ one in the next steps. \n \nPlease press OK to continue." 15 60 4
         "2" "create new config file" 3>&1 1>&2 2>&3)
     case $lazy_option in
         1)
+            echo ""
             lazy_menu_choose_config
-            config_check
+            config_check_old
 
         ;;
         2)
+            echo ""
             lazy_menue_create_config
             config_check_new
         ;;

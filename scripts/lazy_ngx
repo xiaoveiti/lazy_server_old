@@ -126,7 +126,7 @@ ngx_build() {
     mkdir -p ${ngx_workdir}
 
     # Getting Source
-    cd ${ngx_workdir}/
+    cd ${ngx_workdir}
     apt-get build-dep -y nginx > $out 2>&1
     apt-get source -y nginx > $out 2>&1
     cd nginx-*
@@ -152,15 +152,14 @@ ngx_build() {
     dpkg-buildpackage -b > $out 2>&1
 
     # Install
-    cd $mydir_ngx/$ngx_workdir
+    cd ..
     dpkg -i nginx_*.deb > $out 2>&1
 
     # Nginx Module
     apt-get install -y nginx-module-geoip > $out 2>&1
 
     # Cleanup
-    rm -rf $mydir_ngx/$ngx_workdir
-    cd $mydir_ngx
+    rm -rf $ngx_workdir
 }
 
 ngx_first_build(){
