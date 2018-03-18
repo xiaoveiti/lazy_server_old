@@ -64,7 +64,7 @@ prepare_system() {
 
 getting_files() {
   echo -ne "Prepare Files: >> ${blue}begin cloning${nc}<<\r"
-  git clone https://github.com/gxf0/lazy_server.git  > $out 2>&1
+  git clone https://github.com/gxf0/lazy_server.git  $mydir > $out 2>&1
   echo -ne "Prepare Files: >> ${blue}assign rights ${nc}<<\r"
   chmod +x $mydir/lazy/server/installer > $out 2>&1
   chmod +x $mydir/lazy/server/scripts/* > $out 2>&1
