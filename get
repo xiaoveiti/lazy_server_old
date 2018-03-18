@@ -1,0 +1,86 @@
+#!/bin/bash
+
+#################################################
+#
+# Lazy Server
+# Version 1.1a
+# Copyright 2018, Veit <mail@geekmonkey.de>
+#
+# Tested: 14.03.2018
+#
+#################################################
+
+## xf0 Default
+mydir="$(pwd)"
+myname=$(basename $0)
+string="$@"
+
+# Colors
+green='\e[92m'
+red='\e[31m'
+blue='\e[96m'
+nc='\033[0m'
+
+
+logo() {
+echo -ne "
+
+   ${blue}##########################################################################${nc}
+   ${blue}##########################################################################${nc}
+   ${blue}##${nc}                                                                      ${blue}##${nc}
+   ${blue}##${nc}  +++++         '++++:  ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}++++++++++++++++++++   ${blue}##${nc}
+   ${blue}##${nc}   @@@@@       ;@@@@#   ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}   .@@@@@     ,@@@@#    ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}    :@@@@@   .@@@@@     ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}     '@@@@@  @@@@@      ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@############@@@@   ${blue}##${nc}
+   ${blue}##${nc}      #@@@@+@@@@@       ${blue}                       ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}       #@@@@@@@@        ${blue}                       ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}        @@@@@@@         ${blue}                       ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}        .@@@@@#         ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}        @@@@@@@         ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}       @@@@@@@@@        ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}      @@@@@ #@@@@.      ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}     @@@@@   @@@@@      ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@############@@@@   ${blue}##${nc}
+   ${blue}##${nc}    @@@@@     @@@@@     ${blue}@@@@                   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}   @@@@@,      @@@@@    ${blue}@@@@                   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}  +@@@@'        @@@@@   ${blue}@@@@                   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}                                                                      ${blue}##${nc}
+   ${blue}##########################################################################${nc}
+   ${blue}##########################################################################${nc}
+"
+  echo -ne '\n'
+}
+
+prepare_system() {
+    echo -ne "Prepare System: >> ${blue}doing update ${nc}<<\r"
+    apt-get update > $out 2>&1
+    echo -ne "Prepare System: >> ${blue}install packages ${nc}<<\r"
+    apt-get install -y git > $out 2>&1
+    echo -ne "\033[2K" ; printf "\r"
+    echo -ne "Prepare System: [${blue}done${nc}]\r"
+    echo -ne '\n'
+}
+
+getting_files() {
+  echo -ne "Prepare Files: >> ${blue}begin cloning${nc}<<\r"
+  git clone https://github.com/gxf0/lazy_server.git  > $out 2>&1
+  echo -ne "Prepare Files: >> ${blue}assign rights ${nc}<<\r"
+  chmod +x $mydir/lazy/server/installer > $out 2>&1
+  chmod +x $mydir/lazy/server/scripts/* > $out 2>&1
+  echo -ne "\033[2K" ; printf "\r"
+  echo -ne "Prepare Files: [${blue}done${nc}]\r"
+  echo -ne '\n'
+}
+
+give_info() {
+  echo "To run the installer, please use: $mydir/lazy_server/installer"
+  echo "All scripts also can be used alone, one by one, you can find them here: $mydir/lazy_server/scripts"
+  echo ""
+}
+
+main(){
+  logo
+  prepare_system
+  getting_files
+  give_info
+}

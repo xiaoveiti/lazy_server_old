@@ -1,0 +1,362 @@
+#!/bin/bash
+
+#################################################
+#
+# Lazy Server
+# Version 1.1a
+# Copyright 2018, Veit <mail@geekmonkey.de>
+#
+# Tested: 14.03.2018
+#
+#################################################
+
+## Configure
+
+##### DO NOT EDIT BELOW THIS LINE  ####
+
+## xf0 Default
+mydir="$(pwd)"
+myname=$(basename $0)
+string="$@"
+
+# Colors
+green='\e[92m'
+red='\e[31m'
+blue='\e[96m'
+nc='\033[0m'
+
+##### Start Script  ####
+
+cmdline() {
+    local arg=
+    for arg
+    do
+        local delim=""
+        case "$arg" in
+            --help)           args="${args}-h ";;
+            --debug)          args="${args}-x ";;
+            --screen)         args="${args}-s ";;
+            *) [[ "${arg:0:1}" == "-" ]] || delim="\""
+                args="${args}${delim}${arg}${delim} ";;
+        esac
+    done
+    eval set -- $args
+
+    while getopts "hxs" option
+    do
+         case $option in
+         h)
+             usage
+             exit 0
+             ;;
+         x)
+             exec 5>dev-debug.log
+             BASH_XTRACEFD="5"
+             set -x
+             ;;
+         s)
+             out='/dev/tty'
+             ;;
+        esac
+    done
+    return 0
+}
+
+usage() {
+    cat <<- EOF
+
+    ----------------------------------------------------
+
+    Usage: $myname options
+
+    Bla
+
+    Options:
+       -s  --screen		show terminal output
+       -x  --debug		debug (dev-debug.log)
+       -h  --help		show this help
+
+
+    Examples:
+       Debug script :
+       $myname -x
+       $myname --debug
+
+EOF
+}
+
+logo() {
+echo -ne "
+
+   ${blue}##########################################################################${nc}
+   ${blue}##########################################################################${nc}
+   ${blue}##${nc}                                                                      ${blue}##${nc}
+   ${blue}##${nc}  +++++         '++++:  ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}++++++++++++++++++++   ${blue}##${nc}
+   ${blue}##${nc}   @@@@@       ;@@@@#   ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}   .@@@@@     ,@@@@#    ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}    :@@@@@   .@@@@@     ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}     '@@@@@  @@@@@      ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@############@@@@   ${blue}##${nc}
+   ${blue}##${nc}      #@@@@+@@@@@       ${blue}                       ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}       #@@@@@@@@        ${blue}                       ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}        @@@@@@@         ${blue}                       ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}        .@@@@@#         ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}        @@@@@@@         ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}       @@@@@@@@@        ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}      @@@@@ #@@@@.      ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@            @@@@   ${blue}##${nc}
+   ${blue}##${nc}     @@@@@   @@@@@      ${blue}@@@@@@@@@@@@@@@@@@@@   ${nc}@@@@############@@@@   ${blue}##${nc}
+   ${blue}##${nc}    @@@@@     @@@@@     ${blue}@@@@                   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}   @@@@@,      @@@@@    ${blue}@@@@                   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}  +@@@@'        @@@@@   ${blue}@@@@                   ${nc}@@@@@@@@@@@@@@@@@@@@   ${blue}##${nc}
+   ${blue}##${nc}                                                                      ${blue}##${nc}
+   ${blue}##########################################################################${nc}
+   ${blue}##########################################################################${nc}
+"
+  echo -ne '\n'
+}
+
+# Config file - check & create
+
+lazy_scripts="$(cd $mydir/scripts && ls)"
+
+config_read() { #syntax <config.cfg> <section>
+cfg_content=$(sed -n "/\[$2\]/,/\[end]/p" $1 | sed -r '/[^=]+=[^=]+/!d' | sed -r 's/\s+=\s/=/g')
+for var in $cfg_content
+  do
+    export ${var//\"}
+  done
+}
+
+config_install() {
+    config_read $cfg_file $1
+    if [ "${!1}" = true ]; then
+      scripts/$1
+    fi
+}
+
+config_check() {
+for var in $lazy_scripts
+  do
+    config_install $var
+  done
+
+}
+
+config_check_new() {
+if (whiptail --title "Configure: done" --yesno "Do you want to run the installer with your new config ($cfg_file)? Otherwise it will be saved for later." 8 78) then
+      cfg_file="$cfg_file"
+      check_config
+  else
+      exit0
+  fi
+}
+
+check_config() { # not in use by now
+  if [ -f $1 ]; then
+    config_check
+  else
+    echo "${red}WARNING:${nc} Cannot find config file ($1)"
+  fi
+}
+
+lazy_menu_choose_config() {
+  cfg_files=$(ls -1 *.cfg)
+  for i in $cfg_files
+  do
+      cfg_list+=("${i}" " " off)
+  done
+  get_cfg=$(whiptail --title "Choose Config" --radiolist \
+  "Please choose your config file from the list below:" 15 60 6 \
+  "${cfg_list[@]}" 3>&1 1>&2 2>&3)
+  cfg_file=${get_cfg//\"}
+}
+
+lazy_menue_create_config() {
+
+  cfg_file_name=$(whiptail --inputbox "Choose name for your config." 8 78 xf0.de \
+              --title "Configure: Create Config" 3>&1 1>&2 2>&3)
+  cfg_file="${cfg_file_name}.cfg"
+  cp $mydir/lazy.cfg.sample $cfg_file
+
+  whiptail --title "Create Config" --checklist --separate-output "Choose:" 15 60 6 \
+  "Basic Configuration" "" on \
+  "Secure Server" "" on \
+  "LEMP Stack" "" on \
+  "NGiNX (standalone)" "" off \
+  "Pi-hole" "" off \
+  "TS3 Server" "" off 2>results
+
+  while read choice
+  do
+	  case $choice in
+	    	  Basic*) define_deb
+		  ;;
+		  Secure*) define_secure
+		  ;;
+		  LEMP*) define_lemp
+		  ;;
+		  NGiNX*) define_ngx
+		  ;;
+		  Pi-hole*) define_pi
+		  ;;
+		  TS3*) define_ts
+		  ;;
+		  *)
+		  ;;
+	  esac
+  done < results
+}
+
+# End: Check config
+
+# Build config
+
+define_deb() {
+  lazy_deb="true"
+  servername=$(whiptail --inputbox "Choose servername." 8 78 xf0 \
+              --title "Configure: Debian Basic" 3>&1 1>&2 2>&3)
+  hostname=$(whiptail --inputbox "Choose hostname." 8 78 xf0.de \
+              --title "Configure: Debian Basic" 3>&1 1>&2 2>&3)
+  if (whiptail --title "Configure: Debian Basic" --yesno "Do you want to instal postfix? (Send-Only)" 8 78) then
+      install_postfix="true"
+  else
+      install_postfix="false"
+  fi
+  # export to config
+  sed -i 's/^lazy_deb.*/'"lazy_deb = \"$lazy_deb\"/g"  $mydir/$cfg_file
+  sed -i 's/^servername.*/'"servername = \"$servername\"/g"  $mydir/$cfg_file
+  sed -i 's/^hostname.*/'"hostname = \"$hostname\"/g"  $mydir/$cfg_file
+  sed -i 's/^install_postfix.*/'"install_postfix = \"$install_postfix\"/g"  $mydir/$cfg_file
+}
+
+define_secure() {
+  lazy_secure="true"
+  if (whiptail --title "Configure: Secure" --yesno "Do you want to install fail2ban? (Send-Only)" 8 78) then
+      fail2ban="true"
+  else
+      fail2ban="false"
+  fi
+  if (whiptail --title "Configure: Secure" --yesno "Do you want to install apticron? (Send-Only)" 8 78) then
+      apticron="true"
+  else
+      apticron="false"
+  fi
+  if (whiptail --title "Configure: Secure" --yesno "Do you want to install rootkit hunter? (Send-Only)" 8 78) then
+      rkhunter="true"
+  else
+      rkhunter="false"
+  fi
+  hostname=$(whiptail --inputbox "Choose hostname." 8 78 xf0.de \
+              --title "Configure: Debian Basic" 3>&1 1>&2 2>&3)
+  your_email=$(whiptail --inputbox "Choose email for notification." 8 78 mail@xf0.de \
+              --title "Configure: Debian Basic" 3>&1 1>&2 2>&3)
+  ssh_port=$(whiptail --inputbox "Choose email for notification." 8 78 22448 \
+              --title "Configure: Debian Basic" 3>&1 1>&2 2>&3)
+  # export to config
+  sed -i 's/^lazy_secure.*/'"lazy_secure = \"$lazy_secure\"/g"  $mydir/$cfg_file
+  sed -i 's/^fail2ban.*/'"fail2ban = \"$fail2ban\"/g"  $mydir/$cfg_file
+  sed -i 's/^apticron.*/'"apticron = \"$apticron\"/g"  $mydir/$cfg_file
+  sed -i 's/^rkhunter.*/'"rkhunter = \"$rkhunter\"/g"  $mydir/$cfg_file
+  sed -i 's/^hostname.*/'"hostname = \"$hostname\"/g"  $mydir/$cfg_file
+  sed -i 's/^your_email.*/'"your_email = \"$your_email\"/g"  $mydir/$cfg_file
+  sed -i 's/^ssh_port.*/'"ssh_port = \"$ssh_port\"/g"  $mydir/$cfg_file
+}
+
+define_lemp() {
+  lazy_lemp="true"
+  php=$(whiptail --inputbox "Choose php version (default: 7.2).Make sure so check the source list in $mydir/scripts/lazy_lemp, if you change it." 8 78 7.2 \
+              --title "Configure: LEMP" 3>&1 1>&2 2>&3)
+  mariadb=$(whiptail --inputbox "Choose mariadb version (default: 10.2). Make sure so check the source list in $mydir/scripts/lazy_lemp, if you change it." 8 78 10.2 \
+              --title "Configure: LEMP" 3>&1 1>&2 2>&3)
+  if (whiptail --title "Configure: LEMP" --yesno "Do you want to install phpMyAdmin?" 8 78) then
+      install_pma="true"
+  else
+      install_pma="false"
+  fi
+  if [ "$install_pma" = "true" ]; then
+  pma_dir=$(whiptail --inputbox "Choose path for phpMyAdmin webinterface." 8 78 /var/www/phpmyadmin \
+              --title "Configure: LEMP" 3>&1 1>&2 2>&3)
+  fi
+  sql_nopw="false"
+  sql_root_pw=$(whiptail --passwordbox "Please enter your MySQL password" 8 78 --title "Configure: LEMP" 3>&1 1>&2 2>&3)
+  # export to config
+  export_pma_dir="${pma_dir//\//\\/}"
+  sed -i 's/^lazy_lemp.*/'"lazy_lemp = \"$lazy_lemp\"/g"  $mydir/$cfg_file
+  sed -i 's/^php.*/'"php = \"$php\"/g"  $mydir/$cfg_file
+  sed -i 's/^mariadb.*/'"mariadb = \"$mariadb\"/g"  $mydir/$cfg_file
+  sed -i 's/^install_pma.*/'"install_pma = \"$install_pma\"/g"  $mydir/$cfg_file
+  sed -i 's/^pma_dir.*/'"pma_dir = \"$export_pma_dir\"/g"  $mydir/$cfg_file
+  sed -i 's/^sql_nopw.*/'"sql_nopw = \"$sql_nopw\"/g"  $mydir/$cfg_file
+  sed -i 's/^sql_root_pw.*/'"sql_root_pw = \"$sql_root_pw\"/g"  $mydir/$cfg_file
+}
+
+define_ngx() {
+  lazy_ngx="true"
+  sed -i 's/^lazy_ngx.*/'"lazy_ngx = \"$lazy_ngx\"/g"  $mydir/$cfg_file
+}
+
+define_pi() {
+  lazy_pi="true"
+  pi_dir=$(whiptail --inputbox "Choose install path for Pi-hole" 8 78 /opt/pihole \
+              --title "Configure: Pi-hole" 3>&1 1>&2 2>&3)
+  pi_webdir=$(whiptail --inputbox "Choose path for Pi-hole webinterface." 8 78 /var/www/xf0/pihole \
+              --title "Configure: Pi-hole" 3>&1 1>&2 2>&3)
+  # export to config
+  export_pi_dir="${pi_dir//\//\\/}"
+  export_pi_webdir="${pi_webdir//\//\\/}"
+  sed -i 's/^lazy_pi.*/'"lazy_pi = \"$lazy_pi\"/g"  $mydir/$cfg_file
+  sed -i 's/^pi_dir.*/'"pi_dir = \"$export_pi_dir\"/g"  $mydir/$cfg_file
+  sed -i 's/^pi_webdir.*/'"pi_webdir = \"$export_pi_webdir\"/g"  $mydir/$cfg_file
+}
+
+define_ts() {
+  lazy_ts="true"
+  ts_user=$(whiptail --inputbox "Define user to run TeamSpeak Server" 8 78 teamspeak \
+              --title "Configure: TeamSpeak Server" 3>&1 1>&2 2>&3)
+  ts_dir=$(whiptail --inputbox "Define install path for  TeamSpeak Server" 8 78 /opt/teamspeak \
+              --title "Configure: TeamSpeak Server" 3>&1 1>&2 2>&3)
+  ts_download=$(whiptail --inputbox "Define download URL" 8 78 http://dl.4players.de/ts/releases/3.1.0/teamspeak3-server_linux_amd64-3.1.0.tar.bz2 \
+              --title "Configure: TeamSpeak Server" 3>&1 1>&2 2>&3)
+  if (whiptail --title "Configure: TeamSpeak Server" --yesno "Do you want to receive login information via mail?" 8 78) then
+      ts_mail="true"
+  else
+      ts_mail="false"
+  fi
+  if [ "$ts_mail" = "true" ]; then
+  ts_email=$(whiptail --inputbox "Choose path for phpMyAdmin webinterface." 8 78 mail@xf0.de \
+              --title "Configure: TeamSpeak Server" 3>&1 1>&2 2>&3)
+  fi
+  # export to config
+  export_ts_dir="${ts_dir//\//\\/}"
+  export_ts_download="${ts_download//\//\\/}"
+  sed -i 's/^lazy_ts.*/'"lazy_ts = \"$lazy_ts\"/g"  $mydir/$cfg_file
+  sed -i 's/^ts_user.*/'"ts_user = \"$ts_user\"/g"  $mydir/$cfg_file
+  sed -i 's/^ts_dir.*/'"ts_dir = \"$export_ts_dir\"/g"  $mydir/$cfg_file
+  sed -i 's/^ts_download.*/'"ts_download = \"$export_ts_download\"/g"  $mydir/$cfg_file
+  sed -i 's/^ts_mail.*/'"ts_mail = \"$ts_mail\"/g"  $mydir/$cfg_file
+  sed -i 's/^ts_email.*/'"ts_email = \"$ts_email\"/g"  $mydir/$cfg_file
+}
+
+# End: Build config
+
+lazy_menu() {
+    whiptail \
+    --title "Lazy_Server" \
+    --msgbox "Welcome to the lazy_server installer. \n\nThere are two options to set up and configure your server. \
+You can either load one of your config files, or if you dont't have one, you can configure \
+one in the next steps. \n \nPlease press OK to continue." 15 60 4
+
+    lazy_option=$(whiptail --title "Lazy Server" --menu "Make your choice" 15 60 4 \
+        "1" "load config file" \
+        "2" "create new config file" 3>&1 1>&2 2>&3)
+    case $lazy_option in
+        1)
+            lazy_menu_choose_config
+            check_config
+
+        ;;
+        2)
+            lazy_menue_create_config
+            config_check_new
+        ;;
+    esac
+}
