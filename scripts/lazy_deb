@@ -146,7 +146,7 @@ main() {
     cmdline $string
     if [ "$xf0_installer" != true ]; then
       deb_welcome
-    else  
+    else
       echo -e "${blue}============================================"
       echo -e "  Basic Config"
       echo -e "============================================${nc}"
@@ -157,6 +157,8 @@ main() {
     fi
     if [ "$xf0_installer" != true ]; then
       deb_end
+    else
+      echo -e "Basic Configuration: [${blue}done${nc}]\n"
     fi
 }
 
