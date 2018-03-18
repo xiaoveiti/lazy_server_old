@@ -22,7 +22,7 @@ fi
 
 ## xf0 Default
 out="/dev/null"
-mydir_secure="$(pwd)"
+mydir_secure="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 myname=$(basename $0)
 string="$@"
 

@@ -23,7 +23,7 @@ fi
 
 ## xf0 Default
 out="/dev/null"
-mydir_lemp="$(pwd)"
+mydir_lemp="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 myname=$(basename $0)
 string="$@"
 sql_nopw="false"

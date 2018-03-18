@@ -21,7 +21,7 @@ fi
 
 ## xf0 Default
 out="/dev/null"
-mydir_pi="$(pwd)"
+mydir_pi="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 myname=$(basename $0)
 string="$@"
 

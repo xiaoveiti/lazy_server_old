@@ -15,7 +15,7 @@
 ##### DO NOT EDIT BELOW THIS LINE  ####
 
 ## xf0 Default
-mydir_installer="$(pwd)"
+mydir_installer="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 myname=$(basename $0)
 string="$@"
 
@@ -307,7 +307,7 @@ if (whiptail --title "Configure: done" --yesno "Do you want to run the installer
       cfg_file="$cfg_file"
       check_config
   else
-      exit0
+      exit 0
   fi
 }
 
