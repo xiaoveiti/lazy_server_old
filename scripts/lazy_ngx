@@ -159,6 +159,7 @@ ngx_build() {
     apt-get install -y nginx-module-geoip > $out 2>&1
 
     # Cleanup
+    cd ..
     rm -rf $ngx_workdir
 }
 
