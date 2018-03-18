@@ -122,7 +122,7 @@ ts3_start() {
 
 install_ts3() {
   adduser --disabled-password --gecos "" teamspeak > $out 2>&1
-  mkdir $ts_dir
+  mkdir ${ts_dir}
   wget $ts_download > $out 2>&1
   tar -xvf teamspeak3-server_linux*.tar.bz2 -C $ts_dir --strip-components=1 > $out 2>&1
   # Teamspeak requieres to accept the license since version 3.1

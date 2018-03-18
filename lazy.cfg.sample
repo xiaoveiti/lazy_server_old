@@ -76,7 +76,7 @@ mariadb = ""
 
 # phpMyAdmin will be installed by default, you can specify the path for the webinterface
 install_pma = ""
-pma_dir = "/var/www/phpmyadmin"
+pma_dir = ""
 
 # default value for sql_nopw is false, so you will be asked during install process
 # but you also can define a password in the config, to keep the script running.
