@@ -17,7 +17,7 @@
 
 ## xf0 Default
 out="/dev/null"
-mydir="$(pwd)"
+mydir_ngx="$(pwd)"
 myname=$(basename $0)
 string="$@"
 
@@ -152,15 +152,15 @@ ngx_build() {
     dpkg-buildpackage -b > $out 2>&1
 
     # Install
-    cd /$mydir/$ngx_workdir
+    cd /$mydir_ngx/$ngx_workdir
     dpkg -i nginx_*.deb > $out 2>&1
 
     # Nginx Module
     apt-get install -y nginx-module-geoip > $out 2>&1
 
     # Cleanup
-    rm -rf $mydir/$ngx_workdir
-    cd $mydir
+    rm -rf $mydir_ngx/$ngx_workdir
+    cd $mydir_ngx
 }
 
 ngx_first_build(){

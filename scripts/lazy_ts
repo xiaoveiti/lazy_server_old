@@ -21,7 +21,7 @@ fi
 
 ## xf0 Default
 out="/dev/null"
-mydir="$(pwd)"
+mydir_ts="$(pwd)"
 myname=$(basename $0)
 string="$@"
 serverip=$(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')
@@ -217,7 +217,7 @@ ts3_mail() {
   mail -s 'Teamspeak 3 Server Login' $ts_email < ts3_login.txt
   echo ""
   echo "Your login information has been sent to $ts_email"
-  echo -e "You also can find them in ${blue}$mydir/ts3_login.txt${nc}"
+  echo -e "You also can find them in ${blue}$mydir_ts/ts3_login.txt${nc}"
   echo -ne '\n'
 }
 
@@ -259,7 +259,7 @@ main() {
     ts3_mail
   elif  [ "$ts_mail" = false ]; then
     echo ""
-    echo -e "Please check ${blue}$mydir/ts3_login.txt${nc}"
+    echo -e "Please check ${blue}$mydir_ts/ts3_login.txt${nc}"
     echo -ne '\n'
   fi
   ts3_clean

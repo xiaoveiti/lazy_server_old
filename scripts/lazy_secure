@@ -22,7 +22,7 @@ fi
 
 ## xf0 Default
 out="/dev/null"
-mydir="$(pwd)"
+mydir_secure="$(pwd)"
 myname=$(basename $0)
 string="$@"
 

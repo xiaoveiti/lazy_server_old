@@ -15,6 +15,7 @@
 ##### DO NOT EDIT BELOW THIS LINE  ####
 
 ## xf0 Default
+out="/dev/null"
 mydir="$(pwd)"
 myname=$(basename $0)
 string="$@"
@@ -85,7 +86,7 @@ usage() {
 EOF
 }
 
-# Config
+# Config file - check & create
 
 lazy_scripts="$(cd $mydir/scripts && ls)"
 
@@ -100,7 +101,6 @@ for var in $cfg_content
 config_install() {
     config_read $cfg_file $1
     if [ "${!1}" = true ]; then
-      export xf0_installer="true"
       scripts/$1
     fi
 }
@@ -113,35 +113,33 @@ for var in $lazy_scripts
 
 }
 
-check_config() { # not in use
-  if [ -f $1 ]; then
-    config_check
+config_check_new() {
+if (whiptail --title "Configure: done" --yesno "Do you want to run the installer with your new config ($cfg_file)? Otherwise it will be saved for later." 8 78) then
+      cfg_file="$cfg_file"
+      config_check
   else
-    echo -e "${red}WARNING:${nc} Cannot find config file ($1)"
+      exit0
   fi
 }
 
-
 lazy_menu_choose_config() {
-  cfg_files=$(ls -1 *.cfg)
-  for i in $cfg_files
-  do
-      cfg_list+=("${i}" " " off)
-  done
-  get_cfg=$(whiptail --title "Choose Config" --radiolist \
-  "Please choose your config file from the list below:" 15 60 6 \
-  "${cfg_list[@]}" 3>&1 1>&2 2>&3)
-  cfg_file=${get_cfg//\"}
+    cfg_files=$(cd $mydir && ls -1 *.cfg)
+    for i in $cfg_files
+    do
+        cfg_list+=("${i}" " " off)
+    done
+    get_cfg=$(whiptail --title "Choose Config" --radiolist \
+    "Please choose your config file from the list below:" 15 60 6 \
+    "${cfg_list[@]}" 3>&1 1>&2 2>&3)
+    fg_file=${get_cfg//\"}
 }
-
-# Create Config
 
 lazy_menue_create_config() {
 
   cfg_file_name=$(whiptail --inputbox "Choose name for your config." 8 78 xf0.de \
               --title "Configure: Create Config" 3>&1 1>&2 2>&3)
   cfg_file="${cfg_file_name}.cfg"
-  cp $mydir/lazy.cfg.sample $cfg_file
+  cp $mydir/lazy.cfg.sample $mydir/$cfg_file
 
   whiptail --title "Create Config" --checklist --separate-output "Choose:" 15 60 6 \
   "Basic Configuration" "" on \
@@ -172,6 +170,9 @@ lazy_menue_create_config() {
   done < results
 }
 
+# End: Check config
+
+# Build config
 
 define_deb() {
   lazy_deb="true"
@@ -297,19 +298,9 @@ define_ts() {
   sed -i 's/^ts_download.*/'"ts_download = \"$export_ts_download\"/g"  $mydir/$cfg_file
   sed -i 's/^ts_mail.*/'"ts_mail = \"$ts_mail\"/g"  $mydir/$cfg_file
   sed -i 's/^ts_email.*/'"ts_email = \"$ts_email\"/g"  $mydir/$cfg_file
-
 }
 
-# End: Create Config
-
-config_check_new() {
-if (whiptail --title "Configure: done" --yesno "Do you want to run the installer with your new config ($cfg_file)? Otherwise it will be saved for later." 8 78) then
-      cfg_file="$cfg_file"
-      check_config
-  else
-      exit0
-  fi
-}
+# End: Build config
 
 lazy_menu() {
     whiptail \
@@ -333,5 +324,4 @@ one in the next steps. \n \nPlease press OK to continue." 15 60 4
         ;;
     esac
 }
-
 lazy_menu

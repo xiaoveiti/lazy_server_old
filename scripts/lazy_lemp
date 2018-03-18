@@ -23,7 +23,7 @@ fi
 
 ## xf0 Default
 out="/dev/null"
-mydir="$(pwd)"
+mydir_lemp="$(pwd)"
 myname=$(basename $0)
 string="$@"
 sql_nopw="false"
@@ -167,10 +167,10 @@ prepare_system() {
 }
 
 install_ngx() {
-    chmod +x $mydir/lazy_ngx
+    chmod +x $mydir_lemp/lazy_ngx
     export include_lemp="true"
     echo ""
-    $mydir/lazy_ngx
+    $mydir_lemp/lazy_ngx
 }
 
 install_mariadb() {
