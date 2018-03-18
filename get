@@ -63,8 +63,9 @@ prepare_system() {
 }
 
 getting_files() {
+  echo ""
   echo -ne "Prepare Files: >> ${blue}begin cloning${nc}<<\r"
-  git clone https://github.com/gxf0/lazy_server.git  $mydir > $out 2>&1
+  git clone --depth=1 https://github.com/gxf0/lazy_server.git > $out 2>&1
   echo -ne "Prepare Files: >> ${blue}assign rights ${nc}<<\r"
   chmod +x $mydir/lazy/server/installer > $out 2>&1
   chmod +x $mydir/lazy/server/scripts/* > $out 2>&1
@@ -75,8 +76,9 @@ getting_files() {
 
 give_info() {
   echo ""
-  echo "To run the installer, please use: $mydir/lazy_server/installer"
-  echo "All scripts also can be used alone, one by one, you can find them here: $mydir/lazy_server/scripts"
+  echo ""
+  echo "To run the installer, please use: ${blue}$mydir/lazy_server/installer${nc}"
+  echo "All scripts also can be used alone, one by one, you can find them here: ${blue}$mydir/lazy_server/scripts${nc}"
   echo ""
 }
 
