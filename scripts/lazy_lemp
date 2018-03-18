@@ -302,10 +302,11 @@ main() {
   cmdline $string
   if [ "$xf0_installer" != true ]; then
     lemp_start
-  else  
+  else
     echo -e "${blue}============================================"
     echo -e "  LEMP"
     echo -e "============================================${nc}"
+    echo ""
   fi
   prepare_system
   install_ngx

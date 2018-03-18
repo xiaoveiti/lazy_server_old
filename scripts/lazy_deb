@@ -150,6 +150,7 @@ main() {
       echo -e "${blue}============================================"
       echo -e "  Basic Config"
       echo -e "============================================${nc}"
+      echo ""
     fi
     host
     if [ "$install_postfix" = true ]; then
