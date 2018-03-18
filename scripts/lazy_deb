@@ -146,6 +146,10 @@ main() {
     cmdline $string
     if [ "$xf0_installer" != true ]; then
       deb_welcome
+    else  
+      echo -e "${blue}============================================"
+      echo -e "  Basic Config"
+      echo -e "============================================${nc}"
     fi
     host
     if [ "$install_postfix" = true ]; then
