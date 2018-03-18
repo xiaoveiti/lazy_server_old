@@ -74,6 +74,7 @@ getting_files() {
 }
 
 give_info() {
+  echo ""
   echo "To run the installer, please use: $mydir/lazy_server/installer"
   echo "All scripts also can be used alone, one by one, you can find them here: $mydir/lazy_server/scripts"
   echo ""
