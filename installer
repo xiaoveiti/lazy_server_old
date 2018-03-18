@@ -101,7 +101,7 @@ config_install() {
     config_read $cfg_file $1
     if [ "${!1}" = true ]; then
       export xf0_installer="true"
-      scripts/$1
+      $mydir_installer/scripts/$1
     fi
 }
 
