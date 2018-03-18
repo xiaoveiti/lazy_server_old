@@ -27,11 +27,11 @@
 
 [lazy_deb]
 
-lazy_deb = "true"
+lazy_deb = ""
 
 # basic settings
 servername = ""
-hostname = "xf0.de"
+hostname = ""
 
 # most time sendmail doesn't work for me, so I switched to postfix to send mails
 # from the server. Notification: It doesn't configure a whole email server, just
@@ -44,22 +44,22 @@ install_postfix = ""
 
 [lazy_secure]
 
-lazy_secure = "true"
+lazy_secure = ""
 
 # choose which packes you want to install
-fail2ban = "true"
-apticron = "true"
-rkhunter = "true"
+fail2ban = ""
+apticron = ""
+rkhunter = ""
 
 # in case you didn't define a hostnam in the lazy_deb config, or don't use the basic
 # configuration, you have to define a hostname here again.
-hostname = "xf0.de"
+hostname = ""
 
 # the email is been used for login nofifications
-your_email = "mail@xf0.de"
+your_email = ""
 
 # fail2ban works like a charm, but changing your ssh port is nearly as effective.
-ssh_port = "22448"
+ssh_port = ""
 
 [end]
 
@@ -67,20 +67,20 @@ ssh_port = "22448"
 
 [lazy_lemp]
 
-lazy_lemp = "true"
+lazy_lemp = ""
 
 # if you change php or mariadb version, please make sure to check and adjust the
 # source, inside the lazy_lemp script as well.
-php = "7.2"
-mariadb = "10.2"
+php = ""
+mariadb = ""
 
 # phpMyAdmin will be installed by default, you can specify the path for the webinterface
-install_pma = "true"
+install_pma = ""
 pma_dir = "/var/www/phpmyadmin"
 
 # default value for sql_nopw is false, so you will be asked during install process
 # but you also can define a password in the config, to keep the script running.
-sql_nopw = "false"
+sql_nopw = ""
 sql_root_pw = ""
 
 [end]
@@ -89,7 +89,7 @@ sql_root_pw = ""
 
 [lazy_ngx]
 
-lazy_ngx = "false"
+lazy_ngx = ""
 
 # no variables need to be defined, at least until now (placeholder)
 
@@ -99,12 +99,12 @@ lazy_ngx = "false"
 
 [lazy_pi]
 
-lazy_pi = "true"
+lazy_pi = ""
 
 # you can define the path where you want to install Pi-hole, also you can define
 # your personal path for the webinterface, so the update will not fail
-pi_dir = "/opt/pihole"
-pi_webdir = "/var/www/xf0/pihole"
+pi_dir = ""
+pi_webdir = ""
 
 [end]
 
@@ -112,17 +112,17 @@ pi_webdir = "/var/www/xf0/pihole"
 
 [lazi_ts]
 
-lazy_ts = "true"
+lazy_ts = ""
 
 # define user and path for teamspeak server (it's not recommended to run ts3 as root)
-ts_user = "teamspeak"
-ts_dir = "/opt/teamspeak"
+ts_user = ""
+ts_dir = ""
 
 # define
-ts_download = "http://dl.4players.de/ts/releases/3.1.0/teamspeak3-server_linux_amd64-3.1.0.tar.bz2"
+ts_download = ""
 
 # by default no mail will be send, but if you wish so, please define your email
-ts_mail = "true"
-ts_email = "mail@xf0.de"
+ts_mail = ""
+ts_email = ""
 
 [end]
