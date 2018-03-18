@@ -3,10 +3,10 @@
 #################################################
 #
 # Lazy Server
-# Version 1.1a
+# Version 1.2a
 # Copyright 2018, Veit <mail@geekmonkey.de>
 #
-# Tested: 14.03.2018
+# Tested: 18.03.2018
 #
 #################################################
 
@@ -289,7 +289,7 @@ one in the next steps. \n \nPlease press OK to continue." 15 60 4
             echo ""
             lazy_menue_create_config
             config_check_new
-            echo ""            
+            echo ""
         ;;
     esac
 }
