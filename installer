@@ -15,7 +15,7 @@
 ##### DO NOT EDIT BELOW THIS LINE  ####
 
 ## xf0 Default
-mydir="$(pwd)"
+mydir_installer="$(pwd)"
 myname=$(basename $0)
 string="$@"
 
@@ -87,7 +87,7 @@ EOF
 
 # Config
 
-lazy_scripts="$(cd $mydir/scripts && ls)"
+lazy_scripts="$(cd $mydir_installer/scripts && ls)"
 
 config_read() { #syntax <config.cfg> <section>
 cfg_content=$(sed -n "/\[$2\]/,/\[end]/p" $1 | sed -r '/[^=]+=[^=]+/!d' | sed -r 's/\s+=\s/=/g')
@@ -141,7 +141,7 @@ lazy_menue_create_config() {
   cfg_file_name=$(whiptail --inputbox "Choose name for your config." 8 78 xf0.de \
               --title "Configure: Create Config" 3>&1 1>&2 2>&3)
   cfg_file="${cfg_file_name}.cfg"
-  cp $mydir/lazy.cfg.sample $cfg_file
+  cp $mydir_installer/lazy.cfg.sample $cfg_file
 
   whiptail --title "Create Config" --checklist --separate-output "Choose:" 15 60 6 \
   "Basic Configuration" "" on \
@@ -185,10 +185,10 @@ define_deb() {
       install_postfix="false"
   fi
   # export to config
-  sed -i 's/^lazy_deb.*/'"lazy_deb = \"$lazy_deb\"/g"  $mydir/$cfg_file
-  sed -i 's/^servername.*/'"servername = \"$servername\"/g"  $mydir/$cfg_file
-  sed -i 's/^hostname.*/'"hostname = \"$hostname\"/g"  $mydir/$cfg_file
-  sed -i 's/^install_postfix.*/'"install_postfix = \"$install_postfix\"/g"  $mydir/$cfg_file
+  sed -i 's/^lazy_deb.*/'"lazy_deb = \"$lazy_deb\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^servername.*/'"servername = \"$servername\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^hostname.*/'"hostname = \"$hostname\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^install_postfix.*/'"install_postfix = \"$install_postfix\"/g"  $mydir_installer/$cfg_file
 }
 
 define_secure() {
@@ -215,20 +215,20 @@ define_secure() {
   ssh_port=$(whiptail --inputbox "Choose email for notification." 8 78 22448 \
               --title "Configure: Debian Basic" 3>&1 1>&2 2>&3)
   # export to config
-  sed -i 's/^lazy_secure.*/'"lazy_secure = \"$lazy_secure\"/g"  $mydir/$cfg_file
-  sed -i 's/^fail2ban.*/'"fail2ban = \"$fail2ban\"/g"  $mydir/$cfg_file
-  sed -i 's/^apticron.*/'"apticron = \"$apticron\"/g"  $mydir/$cfg_file
-  sed -i 's/^rkhunter.*/'"rkhunter = \"$rkhunter\"/g"  $mydir/$cfg_file
-  sed -i 's/^hostname.*/'"hostname = \"$hostname\"/g"  $mydir/$cfg_file
-  sed -i 's/^your_email.*/'"your_email = \"$your_email\"/g"  $mydir/$cfg_file
-  sed -i 's/^ssh_port.*/'"ssh_port = \"$ssh_port\"/g"  $mydir/$cfg_file
+  sed -i 's/^lazy_secure.*/'"lazy_secure = \"$lazy_secure\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^fail2ban.*/'"fail2ban = \"$fail2ban\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^apticron.*/'"apticron = \"$apticron\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^rkhunter.*/'"rkhunter = \"$rkhunter\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^hostname.*/'"hostname = \"$hostname\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^your_email.*/'"your_email = \"$your_email\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^ssh_port.*/'"ssh_port = \"$ssh_port\"/g"  $mydir_installer/$cfg_file
 }
 
 define_lemp() {
   lazy_lemp="true"
-  php=$(whiptail --inputbox "Choose php version (default: 7.2).Make sure so check the source list in $mydir/scripts/lazy_lemp, if you change it." 8 78 7.2 \
+  php=$(whiptail --inputbox "Choose php version (default: 7.2).Make sure so check the source list in $mydir_installer/scripts/lazy_lemp, if you change it." 8 78 7.2 \
               --title "Configure: LEMP" 3>&1 1>&2 2>&3)
-  mariadb=$(whiptail --inputbox "Choose mariadb version (default: 10.2). Make sure so check the source list in $mydir/scripts/lazy_lemp, if you change it." 8 78 10.2 \
+  mariadb=$(whiptail --inputbox "Choose mariadb version (default: 10.2). Make sure so check the source list in $mydir_installer/scripts/lazy_lemp, if you change it." 8 78 10.2 \
               --title "Configure: LEMP" 3>&1 1>&2 2>&3)
   if (whiptail --title "Configure: LEMP" --yesno "Do you want to install phpMyAdmin?" 8 78) then
       install_pma="true"
@@ -243,18 +243,18 @@ define_lemp() {
   sql_root_pw=$(whiptail --passwordbox "Please enter your MySQL password" 8 78 --title "Configure: LEMP" 3>&1 1>&2 2>&3)
   # export to config
   export_pma_dir="${pma_dir//\//\\/}"
-  sed -i 's/^lazy_lemp.*/'"lazy_lemp = \"$lazy_lemp\"/g"  $mydir/$cfg_file
-  sed -i 's/^php.*/'"php = \"$php\"/g"  $mydir/$cfg_file
-  sed -i 's/^mariadb.*/'"mariadb = \"$mariadb\"/g"  $mydir/$cfg_file
-  sed -i 's/^install_pma.*/'"install_pma = \"$install_pma\"/g"  $mydir/$cfg_file
-  sed -i 's/^pma_dir.*/'"pma_dir = \"$export_pma_dir\"/g"  $mydir/$cfg_file
-  sed -i 's/^sql_nopw.*/'"sql_nopw = \"$sql_nopw\"/g"  $mydir/$cfg_file
-  sed -i 's/^sql_root_pw.*/'"sql_root_pw = \"$sql_root_pw\"/g"  $mydir/$cfg_file
+  sed -i 's/^lazy_lemp.*/'"lazy_lemp = \"$lazy_lemp\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^php.*/'"php = \"$php\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^mariadb.*/'"mariadb = \"$mariadb\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^install_pma.*/'"install_pma = \"$install_pma\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^pma_dir.*/'"pma_dir = \"$export_pma_dir\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^sql_nopw.*/'"sql_nopw = \"$sql_nopw\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^sql_root_pw.*/'"sql_root_pw = \"$sql_root_pw\"/g"  $mydir_installer/$cfg_file
 }
 
 define_ngx() {
   lazy_ngx="true"
-  sed -i 's/^lazy_ngx.*/'"lazy_ngx = \"$lazy_ngx\"/g"  $mydir/$cfg_file
+  sed -i 's/^lazy_ngx.*/'"lazy_ngx = \"$lazy_ngx\"/g"  $mydir_installer/$cfg_file
 }
 
 define_pi() {
@@ -266,9 +266,9 @@ define_pi() {
   # export to config
   export_pi_dir="${pi_dir//\//\\/}"
   export_pi_webdir="${pi_webdir//\//\\/}"
-  sed -i 's/^lazy_pi.*/'"lazy_pi = \"$lazy_pi\"/g"  $mydir/$cfg_file
-  sed -i 's/^pi_dir.*/'"pi_dir = \"$export_pi_dir\"/g"  $mydir/$cfg_file
-  sed -i 's/^pi_webdir.*/'"pi_webdir = \"$export_pi_webdir\"/g"  $mydir/$cfg_file
+  sed -i 's/^lazy_pi.*/'"lazy_pi = \"$lazy_pi\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^pi_dir.*/'"pi_dir = \"$export_pi_dir\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^pi_webdir.*/'"pi_webdir = \"$export_pi_webdir\"/g"  $mydir_installer/$cfg_file
 }
 
 define_ts() {
@@ -291,12 +291,12 @@ define_ts() {
   # export to config
   export_ts_dir="${ts_dir//\//\\/}"
   export_ts_download="${ts_download//\//\\/}"
-  sed -i 's/^lazy_ts.*/'"lazy_ts = \"$lazy_ts\"/g"  $mydir/$cfg_file
-  sed -i 's/^ts_user.*/'"ts_user = \"$ts_user\"/g"  $mydir/$cfg_file
-  sed -i 's/^ts_dir.*/'"ts_dir = \"$export_ts_dir\"/g"  $mydir/$cfg_file
-  sed -i 's/^ts_download.*/'"ts_download = \"$export_ts_download\"/g"  $mydir/$cfg_file
-  sed -i 's/^ts_mail.*/'"ts_mail = \"$ts_mail\"/g"  $mydir/$cfg_file
-  sed -i 's/^ts_email.*/'"ts_email = \"$ts_email\"/g"  $mydir/$cfg_file
+  sed -i 's/^lazy_ts.*/'"lazy_ts = \"$lazy_ts\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^ts_user.*/'"ts_user = \"$ts_user\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^ts_dir.*/'"ts_dir = \"$export_ts_dir\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^ts_download.*/'"ts_download = \"$export_ts_download\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^ts_mail.*/'"ts_mail = \"$ts_mail\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^ts_email.*/'"ts_email = \"$ts_email\"/g"  $mydir_installer/$cfg_file
 
 }
 
