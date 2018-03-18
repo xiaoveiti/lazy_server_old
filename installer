@@ -282,12 +282,14 @@ one in the next steps. \n \nPlease press OK to continue." 15 60 4
             echo ""
             lazy_menu_choose_config
             config_check_old
+            echo ""
 
         ;;
         2)
             echo ""
             lazy_menue_create_config
             config_check_new
+            echo ""            
         ;;
     esac
 }
