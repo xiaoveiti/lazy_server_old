@@ -15,6 +15,7 @@
 ##### DO NOT EDIT BELOW THIS LINE  ####
 
 ## xf0 Default
+out="/dev/null"
 mydir="$(pwd)"
 myname=$(basename $0)
 string="$@"
