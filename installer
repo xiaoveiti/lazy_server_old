@@ -147,9 +147,7 @@ lazy_menue_create_config() {
   "Basic Configuration" "" on \
   "Secure Server" "" on \
   "LEMP Stack" "" on \
-  "NGiNX (standalone)" "" off \
-  "Pi-hole" "" off \
-  "TS3 Server" "" off 2>results
+  "NGiNX (standalone)" "" off 2>results
 
   while read choice
   do
@@ -161,10 +159,6 @@ lazy_menue_create_config() {
 		  LEMP*) define_lemp
 		  ;;
 		  NGiNX*) define_ngx
-		  ;;
-		  Pi-hole*) define_pi
-		  ;;
-		  TS3*) define_ts
 		  ;;
 		  *)
 		  ;;
@@ -255,49 +249,6 @@ define_lemp() {
 define_ngx() {
   lazy_ngx="true"
   sed -i 's/^lazy_ngx.*/'"lazy_ngx = \"$lazy_ngx\"/g"  $mydir_installer/$cfg_file
-}
-
-define_pi() {
-  lazy_pi="true"
-  pi_dir=$(whiptail --inputbox "Choose install path for Pi-hole" 8 78 /opt/pihole \
-              --title "Configure: Pi-hole" 3>&1 1>&2 2>&3)
-  pi_webdir=$(whiptail --inputbox "Choose path for Pi-hole webinterface." 8 78 /var/www/xf0/pihole \
-              --title "Configure: Pi-hole" 3>&1 1>&2 2>&3)
-  # export to config
-  export_pi_dir="${pi_dir//\//\\/}"
-  export_pi_webdir="${pi_webdir//\//\\/}"
-  sed -i 's/^lazy_pi.*/'"lazy_pi = \"$lazy_pi\"/g"  $mydir_installer/$cfg_file
-  sed -i 's/^pi_dir.*/'"pi_dir = \"$export_pi_dir\"/g"  $mydir_installer/$cfg_file
-  sed -i 's/^pi_webdir.*/'"pi_webdir = \"$export_pi_webdir\"/g"  $mydir_installer/$cfg_file
-}
-
-define_ts() {
-  lazy_ts="true"
-  ts_user=$(whiptail --inputbox "Define user to run TeamSpeak Server" 8 78 teamspeak \
-              --title "Configure: TeamSpeak Server" 3>&1 1>&2 2>&3)
-  ts_dir=$(whiptail --inputbox "Define install path for  TeamSpeak Server" 8 78 /opt/teamspeak \
-              --title "Configure: TeamSpeak Server" 3>&1 1>&2 2>&3)
-  ts_download=$(whiptail --inputbox "Define download URL" 8 78 http://dl.4players.de/ts/releases/3.1.0/teamspeak3-server_linux_amd64-3.1.0.tar.bz2 \
-              --title "Configure: TeamSpeak Server" 3>&1 1>&2 2>&3)
-  if (whiptail --title "Configure: TeamSpeak Server" --yesno "Do you want to receive login information via mail?" 8 78) then
-      ts_mail="true"
-  else
-      ts_mail="false"
-  fi
-  if [ "$ts_mail" = "true" ]; then
-  ts_email=$(whiptail --inputbox "Choose path for phpMyAdmin webinterface." 8 78 mail@xf0.de \
-              --title "Configure: TeamSpeak Server" 3>&1 1>&2 2>&3)
-  fi
-  # export to config
-  export_ts_dir="${ts_dir//\//\\/}"
-  export_ts_download="${ts_download//\//\\/}"
-  sed -i 's/^lazy_ts.*/'"lazy_ts = \"$lazy_ts\"/g"  $mydir_installer/$cfg_file
-  sed -i 's/^ts_user.*/'"ts_user = \"$ts_user\"/g"  $mydir_installer/$cfg_file
-  sed -i 's/^ts_dir.*/'"ts_dir = \"$export_ts_dir\"/g"  $mydir_installer/$cfg_file
-  sed -i 's/^ts_download.*/'"ts_download = \"$export_ts_download\"/g"  $mydir_installer/$cfg_file
-  sed -i 's/^ts_mail.*/'"ts_mail = \"$ts_mail\"/g"  $mydir_installer/$cfg_file
-  sed -i 's/^ts_email.*/'"ts_email = \"$ts_email\"/g"  $mydir_installer/$cfg_file
-
 }
 
 # End: Create Config

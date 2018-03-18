@@ -3,9 +3,7 @@
  [lazy_deb](https://github.com/gxf0/lazy_server/tree/master/docs/deb.md) |
  [lazy_lemp](https://github.com/gxf0/lazy_server/tree/master/docs/lemp.md) |
  [lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md) |
- [lazy_pi](https://github.com/gxf0/lazy_server/tree/master/docs/pi.md) |
- [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md) |
- [lazy_ts](https://github.com/gxf0/lazy_server/tree/master/docs/ts3.md)
+ [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md)
  * * *
 Setup and configure a fully functional LEMP stack, which includes:
 
@@ -16,7 +14,7 @@ Setup and configure a fully functional LEMP stack, which includes:
 * MariaDB 10.2 + phpmyAdmin (optional)
 
 Most of the packages will be updated via apt, but if you want to keep your NGiNX Setting up-to-date as well,
-use the [lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md) script from time to time to update it. 
+use the [lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md) script from time to time to update it.
 
 ### Usage
 
