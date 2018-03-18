@@ -77,9 +77,9 @@ getting_files() {
 give_info() {
   echo ""
   echo ""
-  echo "To run the installer, please use:${blue} $mydir/lazy_server/installer${nc}"
-  echo "All scripts also can be used alone, one by one, you can find them here:${blue} $mydir/lazy_server/scripts${nc}"
-  echo ""
+  echo -ne "To run the installer, please use:${blue} $mydir/lazy_server/installer${nc}"
+  echo -ne "All scripts also can be used alone, one by one, you can find them here:${blue} $mydir/lazy_server/scripts${nc}"
+  echo -ne '\n'
 }
 
 main(){
