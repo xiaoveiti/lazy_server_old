@@ -94,35 +94,3 @@ lazy_ngx = ""
 # no variables need to be defined, at least until now (placeholder)
 
 [end]
-
-
-
-[lazy_pi]
-
-lazy_pi = ""
-
-# you can define the path where you want to install Pi-hole, also you can define
-# your personal path for the webinterface, so the update will not fail
-pi_dir = ""
-pi_webdir = ""
-
-[end]
-
-
-
-[lazi_ts]
-
-lazy_ts = ""
-
-# define user and path for teamspeak server (it's not recommended to run ts3 as root)
-ts_user = ""
-ts_dir = ""
-
-# define
-ts_download = ""
-
-# by default no mail will be send, but if you wish so, please define your email
-ts_mail = ""
-ts_email = ""
-
-[end]
