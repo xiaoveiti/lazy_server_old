@@ -12,8 +12,10 @@
 
 ## Configure
 
-pi_dir="/opt/pihole"
-pi_webdir="/var/www/xf0/pihole"
+if [ "$xf0_installer" != true ]; then
+  pi_dir="/opt/pihole"
+  pi_webdir="/var/www/xf0/pihole"
+fi
 
 ##### DO NOT EDIT BELOW THIS LINE  ####
 

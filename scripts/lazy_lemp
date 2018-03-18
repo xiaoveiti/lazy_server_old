@@ -12,10 +12,12 @@
 
 ## Configure
 
-php="7.2" # set PHP Version, check Source
-mariadb="10.2" # set MariaDB Version, check Source
-install_pma="true" # install phpMyAdmin
-pma_dir="/var/www/phpmyadmin" # set phpMyAdmin dir
+if [ "$xf0_installer" != true ]; then
+  php="7.2" # set PHP Version, check Source
+  mariadb="10.2" # set MariaDB Version, check Source
+  install_pma="true" # install phpMyAdmin
+  pma_dir="/var/www/phpmyadmin" # set phpMyAdmin dir
+fi
 
 ##### DO NOT EDIT BELOW THIS LINE  ####
 

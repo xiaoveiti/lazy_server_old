@@ -12,9 +12,11 @@
 
 ## Defined vars
 
-fail2ban="true"
-apticron="true"
-rkhunter="true"
+if [ "$xf0_installer" != true ]; then
+  fail2ban="true"
+  apticron="true"
+  rkhunter="true"
+fi
 
 ##### DO NOT EDIT BELOW THIS LINE  ####
 

@@ -11,9 +11,11 @@
 #################################################
 
 ## Configure
+## For Single Script, please configure here, for Installer, please check config.
 
-serverip=$(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')
-install_postfix="true"
+if [ "$xf0_installer" != true ]; then
+  install_postfix="true"
+fi
 
 ##### DO NOT EDIT BELOW THIS LINE  ####
 
@@ -21,6 +23,7 @@ install_postfix="true"
 mydir="$(pwd)"
 myname=$(basename $0)
 string="$@"
+serverip=$(ip route get 8.8.8.8 | awk 'NR==1 {print $NF}')
 
 # Colors
 green='\e[92m'
