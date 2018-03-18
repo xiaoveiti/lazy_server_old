@@ -193,17 +193,17 @@ define_deb() {
 
 define_secure() {
   lazy_secure="true"
-  if (whiptail --title "Configure: Secure" --yesno "Do you want to install fail2ban? (Send-Only)" 8 78) then
+  if (whiptail --title "Configure: Secure" --yesno "Do you want to install fail2ban?" 8 78) then
       fail2ban="true"
   else
       fail2ban="false"
   fi
-  if (whiptail --title "Configure: Secure" --yesno "Do you want to install apticron? (Send-Only)" 8 78) then
+  if (whiptail --title "Configure: Secure" --yesno "Do you want to install apticron?" 8 78) then
       apticron="true"
   else
       apticron="false"
   fi
-  if (whiptail --title "Configure: Secure" --yesno "Do you want to install rootkit hunter? (Send-Only)" 8 78) then
+  if (whiptail --title "Configure: Secure" --yesno "Do you want to install rootkit hunter?" 8 78) then
       rkhunter="true"
   else
       rkhunter="false"
@@ -212,7 +212,7 @@ define_secure() {
               --title "Configure: Debian Basic" 3>&1 1>&2 2>&3)
   your_email=$(whiptail --inputbox "Choose email for notification." 8 78 mail@xf0.de \
               --title "Configure: Debian Basic" 3>&1 1>&2 2>&3)
-  ssh_port=$(whiptail --inputbox "Choose email for notification." 8 78 22448 \
+  ssh_port=$(whiptail --inputbox "Choose SSH Port." 8 78 22448 \
               --title "Configure: Debian Basic" 3>&1 1>&2 2>&3)
   # export to config
   sed -i 's/^lazy_secure.*/'"lazy_secure = \"$lazy_secure\"/g"  $mydir_installer/$cfg_file
@@ -305,7 +305,7 @@ define_ts() {
 config_check_new() {
 if (whiptail --title "Configure: done" --yesno "Do you want to run the installer with your new config ($cfg_file)? Otherwise it will be saved for later." 8 78) then
       cfg_file="$cfg_file"
-      check_config
+      config_check
   else
       exit 0
   fi
