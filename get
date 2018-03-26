@@ -10,6 +10,8 @@
 #
 #################################################
 
+######### DO NOT EDIT BELOW THIS LINE  ##########
+
 ## xf0 Default
 out="/dev/null"
 mydir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

@@ -94,3 +94,20 @@ lazy_ngx = ""
 # no variables need to be defined, at least until now (placeholder)
 
 [end]
+
+
+
+[lazy_cache]
+
+# default php version
+php = ""
+
+# choose which packes you want to install
+redis = ""
+apcu = ""
+opcache = ""
+
+# should redis listen on  UNIX socket, or TCP port?
+redis_tcp = ""
+
+[end]

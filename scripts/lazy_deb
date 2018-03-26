@@ -17,7 +17,7 @@ if [ "$xf0_installer" != true ]; then
   install_postfix="true"
 fi
 
-##### DO NOT EDIT BELOW THIS LINE  ####
+######### DO NOT EDIT BELOW THIS LINE  ##########
 
 ## xf0 Default
 out="/dev/null"

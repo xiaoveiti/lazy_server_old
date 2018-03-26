@@ -10,10 +10,7 @@
 #
 #################################################
 
-## Configure
-
-
-##### DO NOT EDIT BELOW THIS LINE  ####
+######### DO NOT EDIT BELOW THIS LINE  ##########
 
 ## xf0 Default
 out="/dev/null"

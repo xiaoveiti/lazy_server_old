@@ -10,7 +10,8 @@
 #
 #################################################
 
-## Defined vars
+## Configure
+## For Single Script, please configure here, for Installer, please check config.
 
 if [ "$xf0_installer" != true ]; then
   fail2ban="true"
@@ -18,7 +19,7 @@ if [ "$xf0_installer" != true ]; then
   rkhunter="true"
 fi
 
-##### DO NOT EDIT BELOW THIS LINE  ####
+######### DO NOT EDIT BELOW THIS LINE  ##########
 
 ## xf0 Default
 out="/dev/null"
