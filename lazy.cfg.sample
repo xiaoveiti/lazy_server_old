@@ -97,7 +97,9 @@ lazy_ngx = ""
 
 
 
-[lazy_cache]
+[lazy_xcache]
+
+lazy_xcache = ""
 
 # default php version
 php = ""

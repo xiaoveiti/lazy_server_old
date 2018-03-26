@@ -255,7 +255,7 @@ define_ngx() {
 }
 
 define_cache() {
-  lazy_cache="true"
+  lazy_xcache="true"
   whiptail --title "Cache Config" --checklist --separate-output "Choose:" 15 60 6 \
   "Redis Server" "" on \
   "APCu Modul" "" on \
@@ -279,7 +279,7 @@ define_cache() {
       redis_tcp="true"
   fi
   # export to config
-  sed -i 's/^lazy_cache.*/'"lazy_cache = \"$lazy_cache\"/g"  $mydir_installer/$cfg_file
+  sed -i 's/^lazy_xcache.*/'"lazy_xcache = \"$lazy_xcache\"/g"  $mydir_installer/$cfg_file
   sed -i 's/^redis.*/'"redis = \"$redis\"/g"  $mydir_installer/$cfg_file
   sed -i 's/^redis_tcp.*/'"redis_tcp = \"$redis_tcp\"/g"  $mydir_installer/$cfg_file
   sed -i 's/^apcu.*/'"apcu = \"$apcu\"/g"  $mydir_installer/$cfg_file
