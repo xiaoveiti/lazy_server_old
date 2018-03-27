@@ -256,12 +256,12 @@ apcu_pecl() {
 }
 
 apcu_build() {
-  git clone https://github.com/krakjoe/apcu
+  git clone https://github.com/krakjoe/apcu > $out 2>&1
   cd apcu
-  phpize
-  ./configure
-  make
-  make install
+  phpize > $out 2>&1
+  ./configure > $out 2>&1
+  make > $out 2>&1
+  make install > $out 2>&1
 }
 
 apcu_configure() {
@@ -280,8 +280,8 @@ apcu_cleanup() {
 }
 
 apcu_install() {
-  #apcu_build
-  apcu_pecl
+  apcu_build
+  #apcu_pecl
   apcu_configure
   apcu_cleanup
   echo -e "APCu: [${blue}done${nc}]\n"
@@ -301,6 +301,7 @@ opcache.save_comments=1
 opcache.revalidate_freq=1
 EOF
   service php$php-fpm restart
+  echo -e "OPcache: [${blue}done${nc}]\n"
 }
 
 config_php_sys() {

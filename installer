@@ -278,6 +278,10 @@ define_cache() {
   else
       redis_tcp="true"
   fi
+  if [ "$redis_tcp" = "true" ]; then
+  pma_dir=$(whiptail --inputbox "Choose TCP Port." 8 78 6379 \
+              --title "Configure: Redis Server" 3>&1 1>&2 2>&3)
+  fi
   # export to config
   sed -i 's/^lazy_xcache.*/'"lazy_xcache = \"$lazy_xcache\"/g"  $mydir_installer/$cfg_file
   sed -i 's/^redis.*/'"redis = \"$redis\"/g"  $mydir_installer/$cfg_file
