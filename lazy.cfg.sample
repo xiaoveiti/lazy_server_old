@@ -46,7 +46,7 @@ install_postfix = ""
 
 lazy_secure = ""
 
-# choose which packes you want to install
+# choose which packages you want to install
 fail2ban = ""
 apticron = ""
 rkhunter = ""
@@ -92,5 +92,22 @@ sql_root_pw = ""
 lazy_ngx = ""
 
 # no variables need to be defined, at least until now (placeholder)
+
+[end]
+
+[lazy_xcache]
+
+lazy_xcache = ""
+
+php = ""
+
+# choose which services/modules you want to set up
+redis = ""
+apcu = ""
+opcache = ""
+
+# by default redis will listen on a UNIX socket, otherwise define a TCP port
+redis_tcp = ""
+redis_port = ""
 
 [end]
