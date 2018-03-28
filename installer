@@ -329,3 +329,4 @@ main() {
   cmdline $@
   lazy_menu
 }
+main
