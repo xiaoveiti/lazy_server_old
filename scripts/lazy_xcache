@@ -1,0 +1,343 @@
+#!/bin/bash
+
+#################################################
+#
+# Lazy Cache
+# Version 1.2
+# Copyright 2018, Veit <mail@geekmonkey.de>
+#
+# Tested: 28.03.2018
+#
+#################################################
+
+## Configure
+## For Single Script, please configure here, for Installer, please check config.
+
+if [ "$xf0_installer" != true ]; then
+  php="7.2"
+  redis="true"
+  redis_tcp="false"
+  apcu="true"
+  opcache="true"
+fi
+
+
+######### DO NOT EDIT BELOW THIS LINE  ##########
+
+## xf0 Default
+out="/dev/null"
+mydir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+myname=$(basename $0)
+
+# Colors
+green='\e[92m'
+red='\e[31m'
+blue='\e[96m'
+nc='\033[0m'
+
+##### Start Script  ####
+
+cmdline() {
+    local arg=
+    for arg
+    do
+        local delim=""
+        case "$arg" in
+            --help)           args="${args}-h ";;
+            --debug)          args="${args}-x ";;
+            --screen)         args="${args}-s ";;
+            --tcp)            args="${args}-t ";;
+            *) [[ "${arg:0:1}" == "-" ]] || delim="\""
+                args="${args}${delim}${arg}${delim} ";;
+        esac
+    done
+    eval set -- $args
+
+    while getopts "t:hxs" option
+    do
+         case $option in
+         h)
+             usage
+             exit 0
+             ;;
+         x)
+             exec 5>dev-debug.log
+             BASH_XTRACEFD="5"
+             set -x
+             ;;
+         s)
+             out='/dev/tty'
+             ;;
+        t)
+             if [[ $args = *"-t"* ]] && [[ $args != *"--"* ]]; then
+               getport=${args#*-t}
+               redis_port=${getpw%%' '*}
+             elif [[ $args = *"--tcp"* ]]; then
+               getport=${args#*"--tcp"}
+               redis_port=${getpw%%' '*}
+             fi
+             redis_tcp="true"
+             ;;
+        esac
+    done
+    return 0
+}
+
+usage() {
+    cat <<- EOF
+
+    ----------------------------------------------------
+
+    Usage: $myname options
+
+    Install and configure APCu, OPCache and Redis.
+    By deafualt, Redis will listen on a UNIX socket. Please use
+    the command below, if it should listen to a TCP Socket instead.
+
+    Options:
+       -t  --tcp      configure TCP Socket for Redis
+       -s  --screen		show terminal output
+       -x  --debug		debug (dev-debug.log)
+       -h  --help		show this help
+
+
+    Examples:
+       Debug script :
+       $myname -t<port>
+       $myname --tcp<port>
+
+EOF
+}
+
+# Redis
+
+redis_build() {
+  wget http://download.redis.io/redis-stable.tar.gz > $out 2>&1
+  tar -xzf redis-stable.tar.gz
+  cd redis-stable
+  make > $out 2>&1
+  make PREFIX=/usr install > $out 2>&1
+  cd ..
+}
+
+redis_user_dir() {
+  adduser --system --group --no-create-home redis > $out 2>&1
+
+  mkdir /etc/redis > $out 2>&1
+  mkdir /var/lib/redis > $out 2>&1
+  mkdir /var/log/redis > $out 2>&1
+  touch /var/log/redis/redis.log
+  chown -R redis:redis /etc/redis
+  chown -R redis:redis /var/lib/redis
+  chown -R redis:redis /var/log/redis
+}
+
+redis_secure() {
+  redis_secure=$(date +%s | sha256sum | base64 | head -c 32; echo)
+  sed -i 's/^# requirepass .*/'"requirepass $redis_secure/g" /etc/redis/$redis_conf
+  echo ""
+  echo "Generated Redis Password: $redis_secure"
+  echo "Please save it in some place!"
+  echo ""
+}
+
+redis_conf_socket() {
+  redis_conf="redis.conf"
+  cp redis-stable/redis.conf /etc/redis/$redis_conf
+  sed -i 's/^logfile .*/'"logfile \/var\/log\/redis\/redis.log/g" /etc/redis/$redis_conf
+  sed -i 's/^dir .*/'"dir \/var\/lib\/redis/g" /etc/redis/$redis_conf
+  sed -i 's/^pidfile .*/'"pidfile \/var\/run\/redis\/redis-server.pid/g" /etc/redis/$redis_conf
+  sed -i 's/^port .*/'"port 0/g" /etc/redis/$redis_conf
+  sed -i 's/^# unixsocket .*/'"unixsocket \/var\/run\/redis\/redis.sock/g" /etc/redis/$redis_conf
+  sed -i 's/^# unixsocketperm .*/'"unixsocketperm 770/g" /etc/redis/$redis_conf
+  sed -i 's/^daemonize .*/'"daemonize yes/g" /etc/redis/$redis_conf
+}
+
+redis_conf_port() {
+  redis_conf="redis_$redis_port.conf"
+  cp redis-stable/redis.conf /etc/redis/$redis_conf
+
+  sed -i 's/^logfile .*/'"logfile \/var\/log\/redis\/redis.log/g" /etc/redis/$redis_conf
+  sed -i 's/^dir .*/'"dir \/var\/lib\/redis/g" /etc/redis/$redis_conf
+  sed -i 's/^pidfile .*/'"pidfile \/var\/run\/redis\/redis-server.pid/g" /etc/redis/$redis_conf
+  sed -i 's/^port .*/'"port $redis_port/g" /etc/redis/$redis_conf
+  sed -i 's/^daemonize .*/'"daemonize yes/g" /etc/redis/$redis_conf
+  secure_redis
+}
+
+redis_add_systemctl() {
+  cat > /lib/systemd/system/redis.service <<EOF
+[Unit]
+Description=Advanced key-value store
+After=network.target
+Documentation=http://redis.io/documentation, man:redis-server(1)
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/redis-server /etc/redis/$redis_conf
+ExecStop=/bin/kill -s TERM \$MAINPID
+PIDFile=/var/run/redis/redis-server.pid
+TimeoutStopSec=0
+Restart=always
+User=redis
+Group=redis
+RuntimeDirectory=redis
+RuntimeDirectoryMode=2755
+
+UMask=007
+PrivateTmp=yes
+LimitNOFILE=65535
+PrivateDevices=yes
+ProtectHome=yes
+ReadOnlyDirectories=/
+ReadWriteDirectories=-/var/lib/redis
+ReadWriteDirectories=-/var/log/redis
+ReadWriteDirectories=-/var/run/redis
+
+NoNewPrivileges=true
+CapabilityBoundingSet=CAP_SETGID CAP_SETUID CAP_SYS_RESOURCE
+MemoryDenyWriteExecute=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+# redis-server can write to its own config file when in cluster mode so we
+# permit writing there by default. If you are not using this feature, it is
+# recommended that you replace the following lines with "ProtectSystem=full".
+
+ProtectSystem=true
+ReadWriteDirectories=-/etc/redis
+
+[Install]
+WantedBy=multi-user.target
+Alias=redis.service
+EOF
+  ln -s /lib/systemd/system/redis.service /etc/systemd/system/redis.service
+}
+
+
+redis_setup() {
+   apt-get install -y php$php-redis > $out 2>&1
+   systemctl daemon-reload > $out 2>&1
+   systemctl start redis > $out 2>&1
+   systemctl enable redis > $out 2>&1
+}
+
+redis_cleanup() {
+  rm redis-stable.tar.gz
+  rm -rf redis-stable
+}
+
+redis_install_socket() {
+  redis_build
+  redis_user_dir
+  redis_conf_socket
+  redis_add_systemctl
+  redis_setup
+  redis_cleanup
+}
+
+redis_install_port() {
+  redis_build
+  redis_user_dir
+  redis_conf_port
+  redis_add_systemctl
+  redis_setup
+  redis_cleanup
+  echo -e "Redis Server: [${blue}done${nc}]\n"
+}
+
+# APCu
+
+apcu_pecl() {
+  apt-get install -y php-pear
+  pecl install apcu
+}
+
+apcu_build() {
+  git clone https://github.com/krakjoe/apcu > $out 2>&1
+  cd apcu
+  phpize > $out 2>&1
+  ./configure > $out 2>&1
+  make > $out 2>&1
+  make install > $out 2>&1
+}
+
+apcu_configure() {
+  echo "extension = apcu.so" | tee -a /etc/php/$php/mods-available/apcu.ini > $out 2>&1
+  ln -s /etc/php/$php/mods-available/apcu.ini /etc/php/$php/fpm/conf.d/30-apcu.ini
+  ln -s /etc/php/$php/mods-available/apcu.ini /etc/php/$php/cli/conf.d/30-apcu.ini
+  ln -s /etc/php/$php/mods-available/apcu_bc.ini /etc/php/$php/fpm/conf.d/30apcu_bc.ini
+  ln -s /etc/php/$php/mods-available/apcu_bc.ini /etc/php/$php/cli/conf.d/30apcu_bc.ini
+
+  service php$php-fpm restart
+}
+
+apcu_cleanup() {
+  cd $mydir
+  rm -rf apcu
+}
+
+apcu_install() {
+  apcu_build
+  #apcu_pecl
+  apcu_configure
+  apcu_cleanup
+  echo -e "APCu: [${blue}done${nc}]\n"
+}
+
+# OPcache
+
+opcache_configure() {
+  cat >> /etc/php/$php/fpm/conf.d/10-opcache.ini <<EOF
+
+opcache.enable=1
+opcache.enable_cli=1
+opcache.interned_strings_buffer=8
+opcache.max_accelerated_files=10000
+opcache.memory_consumption=128
+opcache.save_comments=1
+opcache.revalidate_freq=1
+EOF
+  service php$php-fpm restart
+  echo -e "OPcache: [${blue}done${nc}]\n"
+}
+
+config_php_sys() {
+  sed -i 's/^;env\[HOSTNAME\] =.*/'"env\[HOSTNAME\] = \$HOSTNAME/g" /etc/php/$php/fpm/pool.d/www.conf
+  sed -i 's/^;env\[PATH\] .*/'"env\[PATH\] = \/usr\/local\/bin\:\/usr\/bin\:\/bin/g" /etc/php/$php/fpm/pool.d/www.conf
+  sed -i 's/^;env\[TMP\] .*/'"env\[TMP\] =\/tmp/g" /etc/php/$php/fpm/pool.d/www.conf
+  sed -i 's/^;env\[TMPDIR\] .*/'"env\[TMPDIR\] =\/tmp/g" /etc/php/$php/fpm/pool.d/www.conf
+  sed -i 's/^;env\[TEMP\] .*/'"env\[TEMP\] =\/tmp/g" /etc/php/$php/fpm/pool.d/www.conf
+  service php$php-fpm restart
+}
+
+
+main() {
+  cmdline $@
+  if [ "$xf0_installer" != true ]; then
+    echo "blubb"
+  else
+    echo -e "${blue}============================================"
+    echo -e "  Cache"
+    echo -e "============================================${nc}"
+    echo ""
+  fi
+  if [ "$redis" = true ] && [ "$redis_tcp" = true ]; then
+  redis_install_port
+  elif [ "$redis" = true ] && [ "$redis_tcp" != true ]; then
+  redis_install_socket
+  fi
+  if [ "$apcu" = true ]; then
+  apcu_install
+  fi
+  if [ "$opcache" = true ]; then
+  opcache_configure
+  fi
+  #config_php_sys
+}
+
+main
