@@ -4,6 +4,7 @@
  [lazy_lemp](https://github.com/gxf0/lazy_server/tree/master/docs/lemp.md) |
  [lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md) |
  [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md)
+ [lazy_xcache](https://github.com/gxf0/lazy_server/tree/master/docs/xcache.md)
 * * *
 Build NGiNX from Source, include [cache_purge plugin](https://github.com/FRiCKLE/ngx_cache_purge). This script is part of [lazy_lemp](https://github.com/gxf0/lazy_server/tree/master/docs/lemp.md), but also can be used to just build NGiNX,
 without PHP and MariaDB, as a standalone http proxy.
