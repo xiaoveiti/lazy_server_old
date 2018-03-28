@@ -17,7 +17,6 @@
 ## xf0 Default
 mydir_installer="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 myname=$(basename $0)
-string="$@"
 
 # Colors
 green='\e[92m'
@@ -114,7 +113,6 @@ check_config() { # not in use
   fi
 }
 
-
 lazy_menu_choose_config() {
   cfg_files=$(cd $mydir_installer; ls -1 *.cfg)
   for i in $cfg_files
@@ -162,7 +160,6 @@ lazy_menue_create_config() {
 	  esac
   done < results_main
 }
-
 
 define_deb() {
   lazy_deb="true"
@@ -330,4 +327,5 @@ main() {
   cmdline $@
   lazy_menu
 }
+
 main

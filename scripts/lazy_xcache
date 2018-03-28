@@ -238,6 +238,7 @@ redis_install_socket() {
   redis_add_systemctl
   redis_setup
   redis_cleanup
+  echo -e "Redis Server: [${blue}done${nc}]\n"
 }
 
 redis_install_port() {
@@ -337,7 +338,7 @@ main() {
   if [ "$opcache" = true ]; then
   opcache_configure
   fi
-  #config_php_sys
+  config_php_sys
 }
 
 main
