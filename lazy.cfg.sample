@@ -24,7 +24,6 @@
 ##  xf0 Config File |  For more information, please check  | © 2018, Veit
 ##                  |  https://github.com/gxf0/lazy_server | <mail@xf0.de>
 
-
 [lazy_deb]
 
 lazy_deb = ""
@@ -39,7 +38,6 @@ hostname = ""
 install_postfix = ""
 
 [end]
-
 
 
 [lazy_secure]
@@ -64,7 +62,6 @@ ssh_port = ""
 [end]
 
 
-
 [lazy_lemp]
 
 lazy_lemp = ""
@@ -86,7 +83,6 @@ sql_root_pw = ""
 [end]
 
 
-
 [lazy_ngx]
 
 lazy_ngx = ""
@@ -94,6 +90,7 @@ lazy_ngx = ""
 # no variables need to be defined, at least until now (placeholder)
 
 [end]
+
 
 [lazy_xcache]
 

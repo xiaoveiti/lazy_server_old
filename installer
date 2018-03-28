@@ -145,7 +145,7 @@ lazy_menue_create_config() {
   while read choice
   do
 	  case $choice in
-	    	  Basic*) define_deb
+	    Basic*) define_deb
 		  ;;
 		  Secure*) define_secure
 		  ;;
@@ -153,7 +153,7 @@ lazy_menue_create_config() {
 		  ;;
 		  NGiNX*) define_ngx
 		  ;;
-                  Cache*) define_cache
+      Cache*) define_cache
 		  ;;
 		  *)
 		  ;;
@@ -169,6 +169,8 @@ define_deb() {
               --title "Configure: Debian Basic" 3>&1 1>&2 2>&3)
   if (whiptail --title "Configure: Debian Basic" --yesno "Do you want to instal postfix? (Send-Only)" 8 78) then
       install_postfix="true"
+  else
+      install_postfix="false"
   fi
   # export to config
   sed -i 's/^lazy_deb.*/'"lazy_deb = \"$lazy_deb\"/g"  $mydir_installer/$cfg_file
@@ -186,7 +188,7 @@ define_secure() {
   while read choice
   do
 	  case $choice in
-	          Fail2Ban*) fail2ban="true"
+	    Fail2Ban*) fail2ban="true"
 		  ;;
 		  Apticron*) apticron="true"
 		  ;;
@@ -222,6 +224,8 @@ define_lemp() {
   sql_root_pw=$(whiptail --passwordbox "Please enter your MySQL password" 8 78 --title "Configure: LEMP" 3>&1 1>&2 2>&3)
   if (whiptail --title "Configure: LEMP" --yesno "Do you want to install phpMyAdmin?" 8 78) then
       install_pma="true"
+  else
+      install_pma="false"
   fi
   if [ "$install_pma" = "true" ]; then
   pma_dir=$(whiptail --inputbox "Choose path for phpMyAdmin webinterface." 8 78 /var/www/phpmyadmin \
