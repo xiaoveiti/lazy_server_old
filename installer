@@ -122,7 +122,8 @@ lazy_menu_choose_config() {
       cfg_list+=("${i}" " " off)
   done
   get_cfg=$(whiptail --title "Choose Config" --radiolist \
-  "Please choose your config file from the list below:" 15 60 6 \
+  "Please choose your config file from the list below: \
+\n\nNotice: Make sure to select (spacebar) the config! Otherwise the script will not work! " 15 60 6 \
   "${cfg_list[@]}" 3>&1 1>&2 2>&3)
   cfg_file=${get_cfg//\"}
 }
@@ -247,7 +248,7 @@ define_ngx() {
 
 define_cache() {
   lazy_xcache="true"
-  whiptail --title "Configure Cache" --checklist --separate-output "Choose:" 15 60 6 \
+  whiptail --title "Configure: Cache" --checklist --separate-output "Choose:" 15 60 6 \
   "Redis Server" "" on \
   "APCu Modul" "" on \
   "OPcache Modul" "" on 2>results
