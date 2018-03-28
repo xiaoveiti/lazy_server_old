@@ -3,7 +3,7 @@
  [lazy_deb](https://github.com/gxf0/lazy_server/tree/master/docs/deb.md) |
  [lazy_lemp](https://github.com/gxf0/lazy_server/tree/master/docs/lemp.md) |
  [lazy_ngx](https://github.com/gxf0/lazy_server/tree/master/docs/ngx.md) |
- [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md)
+ [lazy_secure](https://github.com/gxf0/lazy_server/tree/master/docs/secure.md) |
  [lazy_xcache](https://github.com/gxf0/lazy_server/tree/master/docs/xcache.md)
  * * *
  Install and configure APCu, OPCache and Redis.
