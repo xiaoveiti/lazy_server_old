@@ -278,7 +278,6 @@ apcu_configure() {
 }
 
 apcu_cleanup() {
-  cd $mydir
   rm -rf apcu
 }
 
@@ -322,6 +321,7 @@ main() {
   if [ "$xf0_installer" != true ]; then
     echo "blubb"
   else
+    echo ""
     echo -e "${blue}============================================"
     echo -e "  Cache"
     echo -e "============================================${nc}"
