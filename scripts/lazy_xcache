@@ -122,7 +122,7 @@ redis_build() {
 
 redis_user_dir() {
   adduser --system --group --no-create-home redis > $out 2>&1
-
+  usermod -g www-data redis
   mkdir /etc/redis > $out 2>&1
   mkdir /var/lib/redis > $out 2>&1
   mkdir /var/log/redis > $out 2>&1
@@ -180,7 +180,7 @@ PIDFile=/var/run/redis/redis-server.pid
 TimeoutStopSec=0
 Restart=always
 User=redis
-Group=redis
+Group=www-data
 RuntimeDirectory=redis
 RuntimeDirectoryMode=2755
 
