@@ -153,7 +153,7 @@ ngx_build() {
     dpkg -i nginx_*.deb > $out 2>&1
 
     # Nginx Module
-    apt-get install -y nginx-module-geoip > $out 2>&1
+    apt-get install -y --allow-change-held-packages nginx-module-geoip > $out 2>&1
 
     # Cleanup
     cd ..
