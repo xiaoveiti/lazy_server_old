@@ -158,6 +158,13 @@ ngx_build() {
     # Cleanup
     cd ..
     rm -rf $ngx_workdir
+
+    # Nginx hold update
+    echo nginx hold | dpkg --set-selections > $out 2>&1
+    aptitude hold nginx > $out 2>&1
+    echo nginx-module-geoip hold | dpkg --set-selections > $out 2>&1
+    aptitude hold nginx-module-geoip > $out 2>&1
+    
 }
 
 ngx_first_build(){
