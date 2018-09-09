@@ -160,7 +160,7 @@ change_ssh() {
   /etc/init.d/ssh restart > $out 2>&1
 }
 
-login_nofification() {
+login_notification() {
   cat > /opt/shell-login.sh <<EOF
 #!/bin/bash
 
@@ -254,7 +254,7 @@ main() {
   fi
   prepare_system
   change_ssh
-  login_nofification
+  login_notification
   install_fail2ban
   install_apticron
   install_rkhunter
